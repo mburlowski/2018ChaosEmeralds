@@ -7,9 +7,13 @@
 
 package org.usfirst.frc.team2472.robot;
 
+import constants.Const;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import subsystem.drive;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -19,6 +23,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends IterativeRobot {
+	AnalogInput distSensL = new AnalogInput(Const.dSensL);
+	AnalogInput distSensR = new AnalogInput(Const.dSensR);
+	drive d = new drive(Const.motorFL, Const.motorFR, Const.motorBL, Const.motorBR);
+	Joystick joyL = new Joystick(Const.jstickL);
+	Joystick joyR = new Joystick(Const.jstickR);
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -58,7 +67,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		
+		d.tankDrive(joyL, joyR);
 	}
 
 	/**
