@@ -1,5 +1,8 @@
 package constants;
 
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SerialPort.Port;
+
 public class Const {
 	//distance sensor values
 	public static int dSensL = 0;
@@ -12,6 +15,10 @@ public class Const {
 	//joysticcs
 	public static int jstickL = 0;
 	public static int jstickR = 0;
+	public static int gpad = 0;
+	public static int box = 0;
 	//joysticc functions
-	public static double edzone = .1;//deadzone from 0 to 1
+	public static double edzone = .1;//deadzone (decimal from 0 to 1)
+	//IMU serial port
+	public static SerialPort imuPort = new SerialPort(57600,Port.kUSB2);
 }

@@ -5,11 +5,15 @@ import objects.Action;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import actions.isGonnaCrashAh;
 import constants.Const;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class drive extends Action {
 	TalonSRX l1, l2, r1, r2;
+	isGonnaCrashAh gonnaCrashL,gonnaCrashR;
+	AnalogInput distSensL,distSensR;
 	/**requires ports for front left motor, front right motor, back left motor, back right motor*/
 	public drive(int flm, int frm, int blm, int brm) {
 		l1 = new TalonSRX(blm);
@@ -18,6 +22,8 @@ public class drive extends Action {
 		r2 = new TalonSRX(frm);
 		r1.setInverted(true);
 		r2.setInverted(true);
+		gonnaCrashL = new isGonnaCrashAh(Const.dSensL);
+		gonnaCrashR = new isGonnaCrashAh(Const.dSensR);
 		//setInverted causes positive numbers to move the robot forward
 	}
 	/**Runs a side of the drivetrain forward at desired speed*/
@@ -47,12 +53,26 @@ public class drive extends Action {
 		r1.set(ControlMode.PercentOutput,0.0);
 		r2.set(ControlMode.PercentOutput,0.0);
 	}
-	/**Moves the robot based on joystick movement*/
+	/**Moves the robot linearly based on joystick movement*/
 	public void tankDrive(Joystick ljoy, Joystick rjoy) {
-		l1.set(ControlMode.PercentOutput,-ljoy.getY());
-		l2.set(ControlMode.PercentOutput,-ljoy.getY());
-		r1.set(ControlMode.PercentOutput,-rjoy.getY());
-		r2.set(ControlMode.PercentOutput,-rjoy.getY());
+		//halves speed if near wall / isGonnaCrash
+		//sets speed to the joystick value input times .5 if near wall, else times 1
+		if(Math.abs(ljoy.getY()) > Const.edzone)
+		l1.set(ControlMode.PercentOutput,-ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+		l2.set(ControlMode.PercentOutput,-ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+		r1.set(ControlMode.PercentOutput,-rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+		r2.set(ControlMode.PercentOutput,-rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+	}
+	/**[DO NOT USE] Moves the robot based on a quadratic function of joystick movement*/
+	@Deprecated
+	public void tankDriveCurved(Joystick ljoy, Joystick rjoy) {//WIP
+		//halves speed if near wall / isGonnaCrash
+		//sets speed to the joystick function input times .5 if near wall, else times 1
+		if(Math.abs(ljoy.getY()) > Const.edzone)
+		l1.set(ControlMode.PercentOutput,-ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+		l2.set(ControlMode.PercentOutput,-ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+		r1.set(ControlMode.PercentOutput,-rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+		r2.set(ControlMode.PercentOutput,-rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
 	}
 	/**Moves the robot at desired power*/
 	public void setAllMotors(double spped) {

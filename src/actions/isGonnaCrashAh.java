@@ -12,7 +12,7 @@ public class isGonnaCrashAh extends Action {
 		distSens = new AnalogInput(dSens);
 	}
 	/**Checks if the chosen distance sensor is too close to wall*/
-	public boolean tailsWatchOut() {
+	public boolean isNearWall() {
 		return distSens.getValue()<10;
 	}
 }
