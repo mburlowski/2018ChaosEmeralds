@@ -34,7 +34,7 @@ public class Robot extends IterativeRobot {
 	Joystick gamepad = new Joystick(Const.gpad);
 	Joystick box = new Joystick(Const.box);
 	IMUAdvanced imu = new IMUAdvanced(Const.imuPort);
-
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -42,6 +42,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		imu.zeroYaw();
+		//smartdashboard shtuff
+		SmartDashboard.putNumber("A. Number", .1);
 	}
 
 	/**
