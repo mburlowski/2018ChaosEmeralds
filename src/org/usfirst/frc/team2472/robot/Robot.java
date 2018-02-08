@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import objects.Action;
+import subsystem.arms;
 import subsystem.drive;
 
 /**
@@ -32,7 +33,8 @@ public class Robot extends IterativeRobot {
 	AnalogInput distSensL = new AnalogInput(Const.dSensL);
 	AnalogInput distSensR = new AnalogInput(Const.dSensR);
 
-	drive d = new drive(Const.motorFL, Const.motorFR, Const.motorBL, Const.motorBR);
+	drive d = new drive();
+	arms a = new arms();
 
 	Joystick joyL = new Joystick(Const.jstickL);
 	Joystick joyR = new Joystick(Const.jstickR);
@@ -94,10 +96,19 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		if(gamepad.getRawButton(Const.xButtonA)) d.runBL(gamepad.getRawAxis(Const.xAxisTrigger));
-		if(gamepad.getRawButton(Const.xButtonB)) d.runBR(gamepad.getRawAxis(Const.xAxisTrigger));
-		if(gamepad.getRawButton(Const.xButtonX)) d.runFL(gamepad.getRawAxis(Const.xAxisTrigger));
-		if(gamepad.getRawButton(Const.xButtonY)) d.runFR(gamepad.getRawAxis(Const.xAxisTrigger));
-
+		//talon speeds are set by the analog triggers (LT/RT)
+		//LT should move forward, RT should move backward
+		if (gamepad.getRawButton(Const.xButtonA))//A button should run BackLeft motor
+			d.runBL(gamepad.getRawAxis(Const.xAxisTrigger));
+		if (gamepad.getRawButton(Const.xButtonB))//B button should run BackRight motor
+			d.runBR(gamepad.getRawAxis(Const.xAxisTrigger));
+		if (gamepad.getRawButton(Const.xButtonX))//X button should run FrontLeft motor
+			d.runFL(gamepad.getRawAxis(Const.xAxisTrigger));
+		if (gamepad.getRawButton(Const.xButtonY))//Y button should run FrontRight motor
+			d.runFR(gamepad.getRawAxis(Const.xAxisTrigger));
+		if (gamepad.getRawButton(Const.xButtonLB))//Left Bumper should run Left intake
+			a.runL(gamepad.getRawAxis(Const.xAxisTrigger));
+		if (gamepad.getRawButton(Const.xButtonRB))//Right Bumper should run Right intake
+			a.runR(gamepad.getRawAxis(Const.xAxisTrigger));
 	}
 }

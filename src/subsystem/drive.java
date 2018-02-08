@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class drive extends Action {
-	TalonSRX l1, l2, r1, r2;
+	TalonSRX bL, fL, bR, fR;
 	isGonnaCrashAh gonnaCrashL, gonnaCrashR;
 	AnalogInput distSensL, distSensR;
 
@@ -19,46 +19,47 @@ public class drive extends Action {
 	 * requires ports for front left motor, front right motor, back left motor, back
 	 * right motor
 	 */
-	public drive(int flm, int frm, int blm, int brm) {
-		l1 = new TalonSRX(blm);
-		l2 = new TalonSRX(flm);
-		r1 = new TalonSRX(brm);
-		r2 = new TalonSRX(frm);
-		r1.setInverted(true);
-		r2.setInverted(true);
+	public drive() {
+		bL = new TalonSRX(Const.motorBL);
+		fL = new TalonSRX(Const.motorBR);
+		bR = new TalonSRX(Const.motorFL);
+		fR = new TalonSRX(Const.motorFR);
+		bR.setInverted(true);
+		fR.setInverted(true);
 		gonnaCrashL = new isGonnaCrashAh(Const.dSensL);
 		gonnaCrashR = new isGonnaCrashAh(Const.dSensR);
-		// setInverted causes positive numbers to move the robot forward
+		// setInverted is used to enumerate backward motors
+		// usually both motors on one side will be inverted
 	}
 
-	/** Runs a side of the drivetrain forward at desired speed */
-	public void runMotor(int motor, double spped) {
-		if (motor == Const.motorBL || motor == Const.motorFL) {
-			l1.set(ControlMode.PercentOutput, spped);
-			l2.set(ControlMode.PercentOutput, spped);
-		} else if (motor == Const.motorBR || motor == Const.motorFR) {
-			r1.set(ControlMode.PercentOutput, spped);
-			r2.set(ControlMode.PercentOutput, spped);
+	/** Runs a side of the drivetrain forward at desired speed (true = right) */
+	public void runSide(boolean dir, double spped) {
+		if (!dir) {
+			bL.set(ControlMode.PercentOutput, spped);
+			fL.set(ControlMode.PercentOutput, spped);
+		} else {
+			bR.set(ControlMode.PercentOutput, spped);
+			fR.set(ControlMode.PercentOutput, spped);
 		}
 	}
 
-	/** Runs a side of the drivetrain backwards at desired speed. */
-	public void runMotorReverse(int motor, double spped) {
-		if (motor == Const.motorBL || motor == Const.motorFL) {
-			l1.set(ControlMode.PercentOutput, spped);
-			l2.set(ControlMode.PercentOutput, spped);
-		} else if (motor == Const.motorBR || motor == Const.motorFR) {
-			r1.set(ControlMode.PercentOutput, spped);
-			r2.set(ControlMode.PercentOutput, spped);
+	/** Runs a side of the drivetrain backwards at desired speed (true = right) */
+	public void runMotorReverse(boolean dir, double spped) {
+		if (!dir) {
+			bL.set(ControlMode.PercentOutput, spped);
+			fL.set(ControlMode.PercentOutput, spped);
+		} else {
+			bR.set(ControlMode.PercentOutput, spped);
+			fR.set(ControlMode.PercentOutput, spped);
 		}
 	}
 
 	/** Stops all motors */
 	public void stopMotors() {
-		l1.set(ControlMode.PercentOutput, 0.0);
-		l2.set(ControlMode.PercentOutput, 0.0);
-		r1.set(ControlMode.PercentOutput, 0.0);
-		r2.set(ControlMode.PercentOutput, 0.0);
+		bL.set(ControlMode.PercentOutput, 0.0);
+		fL.set(ControlMode.PercentOutput, 0.0);
+		bR.set(ControlMode.PercentOutput, 0.0);
+		fR.set(ControlMode.PercentOutput, 0.0);
 	}
 
 	/** Moves the robot linearly based on joystick movement */
@@ -66,17 +67,17 @@ public class drive extends Action {
 		// halves speed if near wall / isGonnaCrash
 		// sets speed to the joystick value input times .5 if near wall, else times 1
 		if (Math.abs(ljoy.getY()) > Const.ledzone) {
-			l1.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
-			l2.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+			bL.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+			fL.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
 		}
-		if (Math.abs(ljoy.getY()) > Const.ledzone) {
-			r1.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
-			r2.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+		if (Math.abs(rjoy.getY()) > Const.redzone) {
+			bR.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+			fR.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
 		}
 	}
 
 	/**
-	 * [DO NOT USE] Moves the robot based on a quadratic function of joystick
+	 * [WIP] Moves the robot based on a quadratic function of joystick
 	 * movement
 	 */
 	@Deprecated
@@ -84,29 +85,29 @@ public class drive extends Action {
 		// halves speed if near wall / isGonnaCrash
 		// sets speed to the joystick function input times .5 if near wall, else times 1
 		if (Math.abs(ljoy.getY()) > Const.ledzone)
-			l1.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
-		l2.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
-		r1.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
-		r2.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+			bL.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+		fL.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+		bR.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+		fR.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
 	}
 
-	/** Moves the robot at desired power */
+	/** Moves all motors at same power */
 	public void setAllMotors(double spped) {
 
-		l1.set(ControlMode.PercentOutput, spped);
-		l2.set(ControlMode.PercentOutput, spped);
-		r1.set(ControlMode.PercentOutput, spped);
-		r2.set(ControlMode.PercentOutput, spped);
+		bL.set(ControlMode.PercentOutput, spped);
+		fL.set(ControlMode.PercentOutput, spped);
+		bR.set(ControlMode.PercentOutput, spped);
+		fR.set(ControlMode.PercentOutput, spped);
 
 	}
 
 	/** Runs both sides of the drivetrain at desired power individually */
-	public void turn(double Lspeed, double Rspeed) {
+	public void turn(double speedL, double speedR) {
 
-		l1.set(ControlMode.PercentOutput, Lspeed);
-		l2.set(ControlMode.PercentOutput, Lspeed);
-		r1.set(ControlMode.PercentOutput, Rspeed);
-		r2.set(ControlMode.PercentOutput, Rspeed);
+		bL.set(ControlMode.PercentOutput, speedL);
+		fL.set(ControlMode.PercentOutput, speedL);
+		bR.set(ControlMode.PercentOutput, speedR);
+		fR.set(ControlMode.PercentOutput, speedR);
 
 	}
 
@@ -116,34 +117,34 @@ public class drive extends Action {
 	 */
 	public void spin() {
 
-		l1.set(ControlMode.PercentOutput, -1.0);
-		l2.set(ControlMode.PercentOutput, -1.0);
-		r1.set(ControlMode.PercentOutput, 1.0);
-		r2.set(ControlMode.PercentOutput, 1.0);
+		bL.set(ControlMode.PercentOutput, -1.0);
+		fL.set(ControlMode.PercentOutput, -1.0);
+		bR.set(ControlMode.PercentOutput, 1.0);
+		fR.set(ControlMode.PercentOutput, 1.0);
 
 	}
 
 	/** Runs front right motor at full power */
 	public void runFR(double spped) {
-		r2.set(ControlMode.PercentOutput, spped);
+		fR.set(ControlMode.PercentOutput, spped);
 
 	}
 
 	/** Runs back right motor at full power */
 	public void runBR(double spped) {
-		r1.set(ControlMode.PercentOutput, spped);
+		bR.set(ControlMode.PercentOutput, spped);
 
 	}
 
 	/** Runs front left motor at full power */
 	public void runFL(double spped) {
-		l2.set(ControlMode.PercentOutput, spped);
+		fL.set(ControlMode.PercentOutput, spped);
 
 	}
 
 	/** Runs back left motor at full power */
 	public void runBL(double spped) {
-		l1.set(ControlMode.PercentOutput, spped);
+		bL.set(ControlMode.PercentOutput, spped);
 
 	}
 }
