@@ -1,6 +1,5 @@
 package actions;
 
-import constants.Const;
 import edu.wpi.first.wpilibj.AnalogInput;
 import objects.Action;
 

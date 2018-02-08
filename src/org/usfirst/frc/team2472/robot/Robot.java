@@ -7,6 +7,8 @@
 
 package org.usfirst.frc.team2472.robot;
 
+import java.util.ArrayList;
+
 import com.kauailabs.nav6.frc.IMUAdvanced;
 
 import constants.Const;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import objects.Action;
 import subsystem.drive;
 
 /**
@@ -28,12 +31,19 @@ import subsystem.drive;
 public class Robot extends IterativeRobot {
 	AnalogInput distSensL = new AnalogInput(Const.dSensL);
 	AnalogInput distSensR = new AnalogInput(Const.dSensR);
+	
 	drive d = new drive(Const.motorFL, Const.motorFR, Const.motorBL, Const.motorBR);
+	
 	Joystick joyL = new Joystick(Const.jstickL);
 	Joystick joyR = new Joystick(Const.jstickR);
 	Joystick gamepad = new Joystick(Const.gpad);
 	Joystick box = new Joystick(Const.box);
+	
 	IMUAdvanced imu = new IMUAdvanced(Const.imuPort);
+	
+	ArrayList<Action> step = new ArrayList<Action>();
+	ArrayList<Action> step2 = new ArrayList<Action>();
+	int nAction = 0;
 	
 	/**
 	 * This function is run when the robot is first started up and should be
