@@ -31,45 +31,46 @@ import subsystem.drive;
 public class Robot extends IterativeRobot {
 	AnalogInput distSensL = new AnalogInput(Const.dSensL);
 	AnalogInput distSensR = new AnalogInput(Const.dSensR);
-	
+
 	drive d = new drive(Const.motorFL, Const.motorFR, Const.motorBL, Const.motorBR);
-	
+
 	Joystick joyL = new Joystick(Const.jstickL);
 	Joystick joyR = new Joystick(Const.jstickR);
 	Joystick gamepad = new Joystick(Const.gpad);
 	Joystick box = new Joystick(Const.box);
-	
+
 	IMUAdvanced imu = new IMUAdvanced(Const.imuPort);
-	
+
 	ArrayList<Action> step = new ArrayList<Action>();
 	ArrayList<Action> step2 = new ArrayList<Action>();
 	int nAction = 0;
-	
+
 	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
+	 * This function is run when the robot is first started up and should be used
+	 * for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
 		imu.zeroYaw();
-		//smartdashboard shtuff
+		// smartdashboard shtuff
 		SmartDashboard.putNumber("A. Number", .1);
 	}
 
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable
-	 * chooser code works with the Java SmartDashboard. If you prefer the
-	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-	 * getString line to get the auto name from the text box below the Gyro
+	 * between different autonomous modes using the dashboard. The sendable chooser
+	 * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
+	 * remove all of the chooser code and uncomment the getString line to get the
+	 * auto name from the text box below the Gyro
 	 *
-	 * <p>You can add additional auto modes by adding additional comparisons to
-	 * the switch structure below with additional strings. If using the
-	 * SendableChooser make sure to add them to the chooser code above as well.
+	 * <p>
+	 * You can add additional auto modes by adding additional comparisons to the
+	 * switch structure below with additional strings. If using the SendableChooser
+	 * make sure to add them to the chooser code above as well.
 	 */
 	@Override
 	public void autonomousInit() {
-		
+
 	}
 
 	/**
@@ -77,8 +78,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		
-		}
+
+	}
 
 	/**
 	 * This function is called periodically during operator control.
@@ -93,5 +94,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		if(gamepad.getRawButton(Const.xButtonA)) d.runBL(gamepad.getRawAxis(Const.xAxisTrigger));
+		if(gamepad.getRawButton(Const.xButtonB)) d.runBR(gamepad.getRawAxis(Const.xAxisTrigger));
+		if(gamepad.getRawButton(Const.xButtonX)) d.runFL(gamepad.getRawAxis(Const.xAxisTrigger));
+		if(gamepad.getRawButton(Const.xButtonY)) d.runFR(gamepad.getRawAxis(Const.xAxisTrigger));
+
 	}
 }

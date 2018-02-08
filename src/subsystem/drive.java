@@ -124,26 +124,26 @@ public class drive extends Action {
 	}
 
 	/** Runs front right motor at full power */
-	public void runFR() {
-		r2.set(ControlMode.PercentOutput, 1.0);
+	public void runFR(double spped) {
+		r2.set(ControlMode.PercentOutput, spped);
 
 	}
 
 	/** Runs back right motor at full power */
-	public void runBR() {
-		r1.set(ControlMode.PercentOutput, 1.0);
+	public void runBR(double spped) {
+		r1.set(ControlMode.PercentOutput, spped);
 
 	}
 
 	/** Runs front left motor at full power */
-	public void runFL() {
-		l2.set(ControlMode.PercentOutput, 1.0);
+	public void runFL(double spped) {
+		l2.set(ControlMode.PercentOutput, spped);
 
 	}
 
 	/** Runs back left motor at full power */
-	public void runBL() {
-		l1.set(ControlMode.PercentOutput, 1.0);
+	public void runBL(double spped) {
+		l1.set(ControlMode.PercentOutput, spped);
 
 	}
 }

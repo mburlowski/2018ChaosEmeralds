@@ -13,8 +13,8 @@ public class Const {
 	public static int motorFL = 2;
 	public static int motorFR = 3;
 	//arms
-	public static int arm1 = 4;
-	public static int arm2 = 5;
+	public static int armLIntake = 4;
+	public static int armRIntake = 5;
 	//lift
 	public static int lift = 6;
 	//joysticcs
