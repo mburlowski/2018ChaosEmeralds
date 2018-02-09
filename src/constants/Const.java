@@ -20,6 +20,8 @@ public class Const {
 	public static int armLRev = 0;
 	public static int armRFwd = 0;
 	public static int armRRev = 0;
+	public static int armL = 0;
+	public static int armR = 0;
 	//joysticcs -- finalize these
 	public static int jstickL = 0;//left flight stick
 	public static int jstickR = 0;//right flight stick

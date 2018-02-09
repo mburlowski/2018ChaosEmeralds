@@ -49,8 +49,10 @@ public class Robot extends IterativeRobot {
 	ArrayList<Action> step = new ArrayList<Action>();
 	ArrayList<Action> step2 = new ArrayList<Action>();
 	int nAction = 0;
+
 	int automode = 0;
-	int testmode = 1;
+	int testmode = 0;
+	String[] testStrings;
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -96,29 +98,36 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		d.tankDrive(joyL, joyR);
-		testPeriodic();
+		d.tankDrive(xbox);
 	}
 
 	@Override
 	public void testInit() {
-		testmode = 1;
-		System.out.println("Talon test mode");
+		testmode = 0;
+		testStrings = new String[] { "Talon test mode", "DoubleSolenoid test mode", "Solenoid test mode" };
+		System.out.println(testStrings[testmode]);
 	}
 
-	/**
-	 * talon speeds are set by the analog triggers (LT/RT); RT should move forward,
-	 * LT should move backward. A button should run BackLeft motor, B button should
-	 * run BackRight motor, X button should run FrontLeft motor, Y button should run
-	 * FrontRight motor, Left Bumper should run Left arm intake, Right Bumper should
-	 * run Right arm intake
-	 */
 	@Override
 	public void testPeriodic() {
-		if(xbox.getPOV()==Const.povRight)testmode++;
-		if(xbox.getPOV()==Const.povLeft)testmode--;
-		SmartDashboard.putNumber("BL Motor", 0);
-		if (testmode == 1) {
+		// DPad left and right switch test modes
+		SmartDashboard.putNumber("BL Motor", d.bL.getMotorOutputPercent());
+		SmartDashboard.putNumber("BR Motor", d.bR.getMotorOutputPercent());
+		SmartDashboard.putNumber("FL Motor", d.fL.getMotorOutputPercent());
+		SmartDashboard.putNumber("FR Motor", d.fR.getMotorOutputPercent());
+		SmartDashboard.putNumber("IL Motor", a.intakeL.getMotorOutputPercent());
+		SmartDashboard.putNumber("IR Motor", a.intakeR.getMotorOutputPercent());
+		switch (testmode) {
+
+		case 0:
+			// talon speeds are set by the analog triggers (LT/RT)
+			// RT should move forward, LT should move backward.
+			// A button should run BackLeft motor
+			// B button should run BackRight motor
+			// X button should run FrontLeft motor
+			// Y button should run FrontRight motor
+			// Left Bumper should run Left arm intake
+			// Right Bumper should run Right arm intake
 			if (xbox.getAButtonPressed()) {
 				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
 					d.runBL(xbox.getTriggerAxis(Hand.kLeft));
@@ -167,6 +176,50 @@ public class Robot extends IterativeRobot {
 			} else if (xbox.getBumperReleased(Hand.kRight)) {
 				a.runR(0);
 			}
+			break;
+		case 1:
+			if(xbox.getYButtonPressed()) {
+				if(xbox.getBumperPressed(Hand.kLeft))
+					a.runPiston(false, 2);
+				else if (xbox.getBumper(Hand.kRight))
+					a.runPiston(true, 2);
+			}
+			if(xbox.getBButtonPressed()) {
+				if(xbox.getBumperPressed(Hand.kLeft))
+					a.runPiston(false, 1);
+				else if (xbox.getBumper(Hand.kRight))
+					a.runPiston(true, 1);
+			}
+			if(xbox.getAButtonPressed()) {
+				if(xbox.getBumperPressed(Hand.kLeft))
+					a.runPiston(false, 0);
+				else if (xbox.getBumper(Hand.kRight))
+					a.runPiston(true, 0);
+			}
+			break;
+		case 2:
+			if(xbox.getYButtonPressed()) {
+				if(xbox.getBumperPressed(Hand.kLeft))
+					a.runPiston(false, true);
+				else if(xbox.getBumperPressed(Hand.kRight))
+					a.runPiston(true, true);
+			}
+			if(xbox.getAButtonPressed()) {
+				if(xbox.getBumperPressed(Hand.kLeft))
+					a.runPiston(false, false);
+				else if(xbox.getBumperPressed(Hand.kRight))
+					a.runPiston(true, false);
+			}
+				
+			break;
+		}
+		if (xbox.getPOV() == Const.povRight && testmode<2) {
+			testmode++;
+			testInit();
+		}
+		if (xbox.getPOV() == Const.povLeft && testmode>0) {
+			testmode--;
+			testInit();
 		}
 
 	}

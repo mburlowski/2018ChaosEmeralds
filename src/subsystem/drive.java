@@ -1,7 +1,5 @@
 package subsystem;
 
-import objects.Action;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -9,9 +7,12 @@ import actions.isGonnaCrashAh;
 import constants.Const;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+import objects.Action;
 
 public class drive extends Action {
-	TalonSRX bL, fL, bR, fR;
+	public TalonSRX bL, fL, bR, fR;
 	isGonnaCrashAh gonnaCrashL, gonnaCrashR;
 	AnalogInput distSensL, distSensR;
 
@@ -63,12 +64,26 @@ public class drive extends Action {
 		// halves speed if near wall / isGonnaCrash
 		// sets speed to the joystick value input times .5 if near wall, else times 1
 		if (Math.abs(ljoy.getY()) > Const.ledzone) {
-			bL.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
-			fL.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+			bL.set(ControlMode.PercentOutput, ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+			fL.set(ControlMode.PercentOutput, ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
 		}
 		if (Math.abs(rjoy.getY()) > Const.redzone) {
-			bR.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
-			fR.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+			bR.set(ControlMode.PercentOutput, rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+			fR.set(ControlMode.PercentOutput, rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+		}
+	}
+	
+	/** Moves the robot linearly based on joystick movement */
+	public void tankDrive(XboxController x) {
+		// halves speed if near wall / isGonnaCrash
+		// sets speed to the joystick value input times .5 if near wall, else times 1
+		if (Math.abs(x.getY(Hand.kLeft)) > Const.ledzone) {
+			bL.set(ControlMode.PercentOutput, x.getY(Hand.kLeft) * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+			fL.set(ControlMode.PercentOutput, x.getY(Hand.kLeft) * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+		}
+		if (Math.abs(x.getY(Hand.kRight)) > Const.redzone) {
+			bR.set(ControlMode.PercentOutput, x.getY(Hand.kRight) * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+			fR.set(ControlMode.PercentOutput, x.getY(Hand.kRight) * ((gonnaCrashR.isNearWall()) ? .5 : 1));
 		}
 	}
 
