@@ -14,6 +14,7 @@ import com.kauailabs.nav6.frc.IMUAdvanced;
 import autoActions.doNothing;
 import constants.Const;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -50,7 +51,8 @@ public class Robot extends IterativeRobot {
 	ArrayList<Action> step2 = new ArrayList<Action>();
 	int nAction = 0;
 
-	int automode = 0;
+	char[] gameData;
+	boolean[] automode; // left = false, right = true
 	int testmode = 0;
 	String[] testStrings;
 
@@ -79,6 +81,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
+		for (int i = 0; i < gameData.length; i++)
+			automode[i] = (gameData[i] == 'R');
 		if (box.getRawButton(1)) {
 			step.add(new doNothing());
 			step2.add(new doNothing());
@@ -178,53 +183,53 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 		case 1:
-			//Hold LB or RB to choose which piston
-			//press Y to set piston "forward"
-			//press B to set piston "reverse"
-			//press X to set piston "off"
-			if(xbox.getYButtonPressed()) {
-				if(xbox.getBumperPressed(Hand.kLeft))
+			// Hold LB or RB to choose which piston
+			// press Y to set piston "forward"
+			// press B to set piston "reverse"
+			// press X to set piston "off"
+			if (xbox.getYButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(false, 2);
 				else if (xbox.getBumper(Hand.kRight))
 					a.runPiston(true, 2);
 			}
-			if(xbox.getBButtonPressed()) {
-				if(xbox.getBumperPressed(Hand.kLeft))
+			if (xbox.getBButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(false, 1);
 				else if (xbox.getBumper(Hand.kRight))
 					a.runPiston(true, 1);
 			}
-			if(xbox.getAButtonPressed()) {
-				if(xbox.getBumperPressed(Hand.kLeft))
+			if (xbox.getAButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(false, 0);
 				else if (xbox.getBumper(Hand.kRight))
 					a.runPiston(true, 0);
 			}
 			break;
 		case 2:
-			//Hold LB or RB to choose which piston
-			//press Y to set piston "on"
-			//press X to set piston "off"
-			if(xbox.getYButtonPressed()) {
-				if(xbox.getBumperPressed(Hand.kLeft))
+			// Hold LB or RB to choose which piston
+			// press Y to set piston "on"
+			// press X to set piston "off"
+			if (xbox.getYButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(false, true);
-				else if(xbox.getBumperPressed(Hand.kRight))
+				else if (xbox.getBumperPressed(Hand.kRight))
 					a.runPiston(true, true);
 			}
-			if(xbox.getAButtonPressed()) {
-				if(xbox.getBumperPressed(Hand.kLeft))
+			if (xbox.getAButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(false, false);
-				else if(xbox.getBumperPressed(Hand.kRight))
+				else if (xbox.getBumperPressed(Hand.kRight))
 					a.runPiston(true, false);
 			}
-				
+
 			break;
 		}
-		if (xbox.getPOV() == Const.povRight && testmode<2) {
+		if (xbox.getPOV() == Const.povRight && testmode < 2) {
 			testmode++;
 			testInit();
 		}
-		if (xbox.getPOV() == Const.povLeft && testmode>0) {
+		if (xbox.getPOV() == Const.povLeft && testmode > 0) {
 			testmode--;
 			testInit();
 		}
