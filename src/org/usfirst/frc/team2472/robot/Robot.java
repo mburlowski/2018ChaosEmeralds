@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import com.kauailabs.nav6.frc.IMUAdvanced;
 
+import autoActions.doNothing;
 import constants.Const;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -40,7 +41,7 @@ public class Robot extends IterativeRobot {
 
 	Joystick joyL = new Joystick(Const.jstickL);
 	Joystick joyR = new Joystick(Const.jstickR);
-	XboxController xbox = new XboxController(Const.xbox);// did you know this existed? who knew? nice to know!!!!!
+	XboxController xbox = new XboxController(Const.xbox);
 	Joystick box = new Joystick(Const.box);
 
 	IMUAdvanced imu = new IMUAdvanced(Const.imuPort);
@@ -48,6 +49,8 @@ public class Robot extends IterativeRobot {
 	ArrayList<Action> step = new ArrayList<Action>();
 	ArrayList<Action> step2 = new ArrayList<Action>();
 	int nAction = 0;
+	int automode = 0;
+	int testmode = 1;
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -74,7 +77,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-
+		if (box.getRawButton(1)) {
+			step.add(new doNothing());
+			step2.add(new doNothing());
+		}
 	}
 
 	/**
@@ -91,66 +97,76 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		d.tankDrive(joyL, joyR);
+		testPeriodic();
+	}
+
+	@Override
+	public void testInit() {
+		testmode = 1;
+		System.out.println("Talon test mode");
 	}
 
 	/**
-	 * This function is called periodically during test mode.
+	 * talon speeds are set by the analog triggers (LT/RT); RT should move forward,
+	 * LT should move backward. A button should run BackLeft motor, B button should
+	 * run BackRight motor, X button should run FrontLeft motor, Y button should run
+	 * FrontRight motor, Left Bumper should run Left arm intake, Right Bumper should
+	 * run Right arm intake
 	 */
 	@Override
 	public void testPeriodic() {
-
-		// talon speeds are set by the analog triggers (LT/RT)
-		// RT should move forward, LT should move backward
-		if (xbox.getAButtonPressed()) {// A button should run BackLeft motor
-			if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
-				d.runBL(xbox.getTriggerAxis(Hand.kLeft));
-			if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
-				d.runBL(-xbox.getTriggerAxis(Hand.kLeft));
-		} else if(xbox.getAButtonReleased()) {
-			d.runBL(0);
-		}
-		if (xbox.getBButtonPressed()) {// B button should run BackRight motor
-			if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
-				d.runBR(xbox.getTriggerAxis(Hand.kLeft));
-			if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
-				d.runBR(-xbox.getTriggerAxis(Hand.kLeft));
-		} else if(xbox.getBButtonReleased()) {
-			d.runBR(0);
-		}
-		if (xbox.getXButtonPressed()) {// X button should run FrontLeft motor
-			if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
-				d.runFL(xbox.getTriggerAxis(Hand.kLeft));
-			if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
-				d.runBL(-xbox.getTriggerAxis(Hand.kLeft));
-		} else if(xbox.getXButtonReleased()) {
-			d.runFL(0);
-		}
-		if (xbox.getYButtonPressed()) {// Y button should run FrontRight motor
-			if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
-				d.runFR(xbox.getTriggerAxis(Hand.kLeft));
-			if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
-				d.runFR(-xbox.getTriggerAxis(Hand.kLeft));
-		} else if(xbox.getYButtonReleased()) {
-			d.runFR(0);
-		}
-		if (xbox.getBumperPressed(Hand.kLeft)) {// Left Bumper should run Left arm intake
-			if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
-				a.runL(xbox.getTriggerAxis(Hand.kLeft));
-			if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
-				a.runL(-xbox.getTriggerAxis(Hand.kLeft));
-		} else if(xbox.getBumperReleased(Hand.kLeft)) {
-			a.runL(0);
-		}
-		if (xbox.getBumperPressed(Hand.kRight)) {// Right Bumper should run Right arm intake
-			if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
-				a.runR(xbox.getTriggerAxis(Hand.kLeft));
-			if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
-				a.runR(-xbox.getTriggerAxis(Hand.kLeft));
-		} else if(xbox.getBumperReleased(Hand.kRight)) {
-			a.runR(0);
-		}
-		if(xbox.getPOV()==Const.povUp) {
-			a.grab();
+		if(xbox.getPOV()==Const.povRight)testmode++;
+		if(xbox.getPOV()==Const.povLeft)testmode--;
+		SmartDashboard.putNumber("BL Motor", 0);
+		if (testmode == 1) {
+			if (xbox.getAButtonPressed()) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					d.runBL(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					d.runBL(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getAButtonReleased()) {
+				d.runBL(0);
+			}
+			if (xbox.getBButtonPressed()) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					d.runBR(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					d.runBR(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getBButtonReleased()) {
+				d.runBR(0);
+			}
+			if (xbox.getXButtonPressed()) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					d.runFL(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					d.runBL(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getXButtonReleased()) {
+				d.runFL(0);
+			}
+			if (xbox.getYButtonPressed()) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					d.runFR(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					d.runFR(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getYButtonReleased()) {
+				d.runFR(0);
+			}
+			if (xbox.getBumperPressed(Hand.kLeft)) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					a.runL(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					a.runL(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getBumperReleased(Hand.kLeft)) {
+				a.runL(0);
+			}
+			if (xbox.getBumperPressed(Hand.kRight)) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					a.runR(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					a.runR(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getBumperReleased(Hand.kRight)) {
+				a.runR(0);
+			}
 		}
 
 	}

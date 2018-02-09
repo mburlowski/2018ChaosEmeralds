@@ -4,9 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import constants.Const;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Solenoid;
 import objects.Action;
 
 public class arms extends Action {
@@ -22,6 +20,7 @@ public class arms extends Action {
 	public void grab() {
 		pistonL.set(DoubleSolenoid.Value.kForward);
 		pistonR.set(DoubleSolenoid.Value.kForward);
+		
 	}
 	/**Opens arms*/
 	public void release() {
@@ -49,10 +48,11 @@ public class arms extends Action {
 	/**Stops all intake motors*/
 	public void stop() {
 		intakeL.set(ControlMode.PercentOutput, 0);
-		intakeL.set(ControlMode.PercentOutput, 0);
+		intakeR.set(ControlMode.PercentOutput, 0);
 	}
 	/**Stops intake motors and sets pistons to off position*/
 	public void reset() {
-		
+		stop();
+		release();
 	}
 }

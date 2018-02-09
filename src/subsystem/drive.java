@@ -15,10 +15,6 @@ public class drive extends Action {
 	isGonnaCrashAh gonnaCrashL, gonnaCrashR;
 	AnalogInput distSensL, distSensR;
 
-	/**
-	 * requires ports for front left motor, front right motor, back left motor, back
-	 * right motor
-	 */
 	public drive() {
 		bL = new TalonSRX(Const.motorBL);
 		fL = new TalonSRX(Const.motorBR);
@@ -33,8 +29,8 @@ public class drive extends Action {
 	}
 
 	/** Runs a side of the drivetrain forward at desired speed (true = right) */
-	public void runSide(boolean dir, double spped) {
-		if (!dir) {
+	public void runSide(boolean side, double spped) {
+		if (!side) {
 			bL.set(ControlMode.PercentOutput, spped);
 			fL.set(ControlMode.PercentOutput, spped);
 		} else {
@@ -44,8 +40,8 @@ public class drive extends Action {
 	}
 
 	/** Runs a side of the drivetrain backwards at desired speed (true = right) */
-	public void runMotorReverse(boolean dir, double spped) {
-		if (!dir) {
+	public void runMotorReverse(boolean side, double spped) {
+		if (!side) {
 			bL.set(ControlMode.PercentOutput, spped);
 			fL.set(ControlMode.PercentOutput, spped);
 		} else {
@@ -77,8 +73,7 @@ public class drive extends Action {
 	}
 
 	/**
-	 * [WIP] Moves the robot based on a quadratic function of joystick
-	 * movement
+	 * [WIP] Moves the robot based on a quadratic function of joystick movement
 	 */
 	@Deprecated
 	public void tankDriveCurved(Joystick ljoy, Joystick rjoy) {// WIP
@@ -98,7 +93,6 @@ public class drive extends Action {
 		fL.set(ControlMode.PercentOutput, spped);
 		bR.set(ControlMode.PercentOutput, spped);
 		fR.set(ControlMode.PercentOutput, spped);
-
 	}
 
 	/** Runs both sides of the drivetrain at desired power individually */
@@ -107,9 +101,7 @@ public class drive extends Action {
 		bL.set(ControlMode.PercentOutput, speedL);
 		fL.set(ControlMode.PercentOutput, speedL);
 		bR.set(ControlMode.PercentOutput, speedR);
-		fR.set(ControlMode.PercentOutput, speedR);
-
-	}
+		fR.set(ControlMode.PercentOutput, speedR);	}
 
 	/**
 	 * Causes the robot to spin by running both sides of the drive train in
@@ -121,30 +113,25 @@ public class drive extends Action {
 		fL.set(ControlMode.PercentOutput, -1.0);
 		bR.set(ControlMode.PercentOutput, 1.0);
 		fR.set(ControlMode.PercentOutput, 1.0);
-
 	}
 
 	/** Runs front right motor at full power */
 	public void runFR(double spped) {
 		fR.set(ControlMode.PercentOutput, spped);
-
 	}
 
 	/** Runs back right motor at full power */
 	public void runBR(double spped) {
 		bR.set(ControlMode.PercentOutput, spped);
-
 	}
 
 	/** Runs front left motor at full power */
 	public void runFL(double spped) {
 		fL.set(ControlMode.PercentOutput, spped);
-
 	}
 
 	/** Runs back left motor at full power */
 	public void runBL(double spped) {
 		bL.set(ControlMode.PercentOutput, spped);
-
 	}
 }
