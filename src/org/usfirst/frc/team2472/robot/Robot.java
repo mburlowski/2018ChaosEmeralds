@@ -178,6 +178,10 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 		case 1:
+			//Hold LB or RB to choose which piston
+			//press Y to set piston "forward"
+			//press B to set piston "reverse"
+			//press X to set piston "off"
 			if(xbox.getYButtonPressed()) {
 				if(xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(false, 2);
@@ -198,6 +202,9 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 		case 2:
+			//Hold LB or RB to choose which piston
+			//press Y to set piston "on"
+			//press X to set piston "off"
 			if(xbox.getYButtonPressed()) {
 				if(xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(false, true);
