@@ -18,28 +18,41 @@ public class arms extends Action {
 		intakeL = new TalonSRX(Const.armLIntake);
 		intakeR = new TalonSRX(Const.armRIntake);
 	}
+	/**Closes arms*/
 	public void grab() {
 		pistonL.set(DoubleSolenoid.Value.kForward);
 		pistonR.set(DoubleSolenoid.Value.kForward);
 	}
+	/**Opens arms*/
 	public void release() {
 		pistonL.set(DoubleSolenoid.Value.kReverse);
 		pistonR.set(DoubleSolenoid.Value.kReverse);
 	}
+	/**Makes intake take in*/
 	public void takeIn(double spped) {
-		
+		intakeL.set(ControlMode.PercentOutput, spped);
+		intakeR.set(ControlMode.PercentOutput, spped);
 	}
+	/**Makes intake push out*/
 	public void takeOut(double spped) {
-		
+		intakeL.set(ControlMode.PercentOutput, -spped);
+		intakeR.set(ControlMode.PercentOutput, -spped);
 	}
+	/**Runs only the left intake motor*/
 	public void runL(double spped) {
 		intakeL.set(ControlMode.PercentOutput, spped);
 	}
+	/**Runs only the right intake motor*/
 	public void runR(double spped) {
 		intakeR.set(ControlMode.PercentOutput, spped);
 	}
+	/**Stops all intake motors*/
 	public void stop() {
 		intakeL.set(ControlMode.PercentOutput, 0);
 		intakeL.set(ControlMode.PercentOutput, 0);
+	}
+	/**Stops intake motors and sets pistons to off position*/
+	public void reset() {
+		
 	}
 }
