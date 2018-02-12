@@ -20,6 +20,12 @@ public class Const {
 	public static int armLRev = 0;
 	public static int armRFwd = 0;
 	public static int armRRev = 0;
+	public static int armLUp = 0;
+	public static int armRUp = 0;
+	public static int armLUpFwd = 0;
+	public static int armLUpRev = 0;
+	public static int armRUpFwd = 0;
+	public static int armRUpRev = 0;
 	public static int armL = 0;
 	public static int armR = 0;
 	//joysticcs -- finalize these

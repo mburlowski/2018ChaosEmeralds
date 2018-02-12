@@ -183,44 +183,64 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 		case 1:
-			// Hold LB or RB to choose which piston
+			// Hold LB, RB, LT, or RT to choose piston (bumpers forward, triggers up)
 			// press Y to set piston "forward"
 			// press B to set piston "reverse"
 			// press X to set piston "off"
 			if (xbox.getYButtonPressed()) {
 				if (xbox.getBumperPressed(Hand.kLeft))
-					a.runPiston(false, 2);
+					a.runPiston(0, 2);
 				else if (xbox.getBumper(Hand.kRight))
-					a.runPiston(true, 2);
+					a.runPiston(1, 2);
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5)
+					a.runPiston(2, 2);
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5)
+					a.runPiston(3, 2);
 			}
 			if (xbox.getBButtonPressed()) {
 				if (xbox.getBumperPressed(Hand.kLeft))
-					a.runPiston(false, 1);
+					a.runPiston(0, 1);
 				else if (xbox.getBumper(Hand.kRight))
-					a.runPiston(true, 1);
+					a.runPiston(1, 1);
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5)
+					a.runPiston(2, 1);
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5)
+					a.runPiston(3, 1);
 			}
 			if (xbox.getAButtonPressed()) {
 				if (xbox.getBumperPressed(Hand.kLeft))
-					a.runPiston(false, 0);
+					a.runPiston(0, 0);
 				else if (xbox.getBumper(Hand.kRight))
-					a.runPiston(true, 0);
+					a.runPiston(1, 0);
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5)
+					a.runPiston(2, 0);
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5)
+					a.runPiston(3, 0);
 			}
 			break;
 		case 2:
-			// Hold LB or RB to choose which piston
+			// Hold LB, RB, LT, or RT to choose piston (bumpers forward, triggers up)
 			// press Y to set piston "on"
 			// press X to set piston "off"
 			if (xbox.getYButtonPressed()) {
 				if (xbox.getBumperPressed(Hand.kLeft))
-					a.runPiston(false, true);
+					a.runPiston(0, true);
 				else if (xbox.getBumperPressed(Hand.kRight))
-					a.runPiston(true, true);
+					a.runPiston(1, true);
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5) 
+					a.runPiston(2, true);
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5) 
+					a.runPiston(3, true);
 			}
 			if (xbox.getAButtonPressed()) {
 				if (xbox.getBumperPressed(Hand.kLeft))
-					a.runPiston(false, false);
+					a.runPiston(0, false);
 				else if (xbox.getBumperPressed(Hand.kRight))
-					a.runPiston(true, false);
+					a.runPiston(1, false);
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5) 
+					a.runPiston(2, false);
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5) 
+					a.runPiston(3, false);
 			}
 
 			break;
