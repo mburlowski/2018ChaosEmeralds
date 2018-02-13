@@ -21,8 +21,8 @@ public class drive extends Action {
 		fL = new TalonSRX(Const.motorBR);
 		bR = new TalonSRX(Const.motorFL);
 		fR = new TalonSRX(Const.motorFR);
-		bR.setInverted(true);
-		fR.setInverted(true);
+		//bR.setInverted(true);
+		//fR.setInverted(true);
 		gonnaCrashL = new isGonnaCrashAh(Const.dSensL);
 		gonnaCrashR = new isGonnaCrashAh(Const.dSensR);
 		// setInverted is used to enumerate backward motors
@@ -33,10 +33,10 @@ public class drive extends Action {
 	public void runSide(boolean side, double spped) {
 		if (!side) {
 			bL.set(ControlMode.PercentOutput, spped);
-			fL.set(ControlMode.PercentOutput, spped);
+			fL.follow(bL);
 		} else {
 			bR.set(ControlMode.PercentOutput, spped);
-			fR.set(ControlMode.PercentOutput, spped);
+			fR.follow(bR);
 		}
 	}
 
@@ -65,11 +65,11 @@ public class drive extends Action {
 		// sets speed to the joystick value input times .5 if near wall, else times 1
 		if (Math.abs(ljoy.getY()) > Const.ledzone) {
 			bL.set(ControlMode.PercentOutput, ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
-			fL.set(ControlMode.PercentOutput, ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+			fL.follow(bL);
 		}
 		if (Math.abs(rjoy.getY()) > Const.redzone) {
 			bR.set(ControlMode.PercentOutput, rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
-			fR.set(ControlMode.PercentOutput, rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+			fR.follow(bR);
 		}
 	}
 	
@@ -79,11 +79,11 @@ public class drive extends Action {
 		// sets speed to the joystick value input times .5 if near wall, else times 1
 		if (Math.abs(x.getY(Hand.kLeft)) > Const.ledzone) {
 			bL.set(ControlMode.PercentOutput, x.getY(Hand.kLeft) * ((gonnaCrashL.isNearWall()) ? .5 : 1));
-			fL.set(ControlMode.PercentOutput, x.getY(Hand.kLeft) * ((gonnaCrashL.isNearWall()) ? .5 : 1));
+			fL.follow(bL);
 		}
 		if (Math.abs(x.getY(Hand.kRight)) > Const.redzone) {
 			bR.set(ControlMode.PercentOutput, x.getY(Hand.kRight) * ((gonnaCrashR.isNearWall()) ? .5 : 1));
-			fR.set(ControlMode.PercentOutput, x.getY(Hand.kRight) * ((gonnaCrashR.isNearWall()) ? .5 : 1));
+			fR.follow(bR);
 		}
 	}
 

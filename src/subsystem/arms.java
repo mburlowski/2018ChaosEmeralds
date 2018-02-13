@@ -29,6 +29,14 @@ public class arms extends Action {
 		pistonLF.set(DoubleSolenoid.Value.kForward);
 		pistonRF.set(DoubleSolenoid.Value.kForward);
 	}
+	/**Closes one side; true=right*/
+	public void halfGrab(boolean side) {
+		if(side) {
+			pistonRFA.set(true);
+		} else {
+			pistonLFA.set(true);
+		}
+	}
 
 	/** Opens arms */
 	public void release() {
