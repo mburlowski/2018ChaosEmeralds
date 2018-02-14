@@ -3,8 +3,9 @@ package autoActions;
 import objects.Action;
 
 public class doNothing extends Action {
-	public doNothing() {
-		
+	int timeout;
+	public doNothing(int time) {
+		timeout=time;
 	}
 	public void startAction() {
 		
@@ -16,6 +17,20 @@ public class doNothing extends Action {
 		
 	}
 	public boolean isFinished() {
-		return true;
+if(isTimedOut()){
+			
+			endAction();
+			
+			return true;
+			
+		}
+		
+		else{
+		
+			return false;
+			
+		}
+		
 	}
+	
 }

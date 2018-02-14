@@ -38,7 +38,8 @@ public class Robot extends IterativeRobot {
 	AnalogInput distSensR = new AnalogInput(Const.dSensR);
 
 	drive d = new drive();
-	arms a = new arms();
+	public static arms a = new arms();
+	
 
 	Joystick joyL = new Joystick(Const.jstickL);
 	Joystick joyR = new Joystick(Const.jstickR);
