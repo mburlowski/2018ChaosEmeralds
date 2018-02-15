@@ -14,7 +14,6 @@ import com.kauailabs.nav6.frc.IMUAdvanced;
 import autoActions.doNothing;
 import constants.Const;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -24,11 +23,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import objects.Action;
-import subsystem.FirstLift;
-import subsystem.SecondLift;
 import subsystem.arms;
-import subsystem.carriage;
-import subsystem.climber;
 import subsystem.drive;
 
 /**
@@ -39,21 +34,16 @@ import subsystem.drive;
  * project.
  */
 public class Robot extends IterativeRobot {
-	Compressor compress=new Compressor(0);
 	AnalogInput distSensL = new AnalogInput(Const.dSensL);
 	AnalogInput distSensR = new AnalogInput(Const.dSensR);
-	Joystick xbox =new Joystick(Const.xboxManipulator);
-	public static drive d = new drive();
+
+	drive d = new drive();
 	public static arms a = new arms();
-	public static carriage c =new carriage();
-	public static FirstLift First=new FirstLift();
-	public static SecondLift Second=new SecondLift();
-	public static climber climb=new climber();
 	
 
 	Joystick joyL = new Joystick(Const.jstickL);
 	Joystick joyR = new Joystick(Const.jstickR);
-	XboxController xboxDrive = new XboxController(Const.xbox);
+	XboxController xbox = new XboxController(Const.xbox);
 	Joystick box = new Joystick(Const.box);
 
 	IMUAdvanced imu = new IMUAdvanced(Const.imuPort);
@@ -73,7 +63,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		compress.setClosedLoopControl(true);
 		imu.zeroYaw();
 		// smartdashboard shtuff
 		SmartDashboard.putNumber("A. Number", .1);
@@ -97,8 +86,8 @@ public class Robot extends IterativeRobot {
 		for (int i = 0; i < gameData.length; i++)
 			automode[i] = (gameData[i] == 'R');
 		if (box.getRawButton(1)) {
-			step.add(new doNothing(15));
-			step2.add(new doNothing(15));
+			step.add(new doNothing());
+			step2.add(new doNothing());
 		}
 	}
 
@@ -115,23 +104,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		d.tankDrive(xboxDrive);
-		if(!First.lifted&&xbox.getRawButton(Const.buttonA)) {
-				First.liftUp();
-		}else if(xbox.getRawButton(Const.buttonA)&&First.lifted) {
-				First.liftDown();
-		}
-		Second.lift(xbox.getRawAxis(0)-xbox.getRawAxis(1));
-		//each axis controls a direction
-		if(xbox.getRawButton(Const.buttonB)) {
-			a.takeIn(1.0);
-		}
-		if(xbox.getRawButton(Const.buttonL)) {
-			a.release();
-		}
-		if(xbox.getRawButton(Const.buttonX)) {
-			c.In();
-		}
+		d.tankDrive(xbox);
 	}
 
 	@Override
@@ -161,52 +134,52 @@ public class Robot extends IterativeRobot {
 			// Y button should run FrontRight motor
 			// Left Bumper should run Left arm intake
 			// Right Bumper should run Right arm intake
-			if (xboxDrive.getAButtonPressed()) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					d.runBL(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					d.runBL(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getAButtonReleased()) {
+			if (xbox.getAButtonPressed()) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					d.runBL(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					d.runBL(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getAButtonReleased()) {
 				d.runBL(0);
 			}
-			if (xboxDrive.getBButtonPressed()) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					d.runBR(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					d.runBR(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getBButtonReleased()) {
+			if (xbox.getBButtonPressed()) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					d.runBR(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					d.runBR(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getBButtonReleased()) {
 				d.runBR(0);
 			}
-			if (xboxDrive.getXButtonPressed()) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					d.runFL(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					d.runBL(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getXButtonReleased()) {
+			if (xbox.getXButtonPressed()) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					d.runFL(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					d.runBL(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getXButtonReleased()) {
 				d.runFL(0);
 			}
-			if (xboxDrive.getYButtonPressed()) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					d.runFR(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					d.runFR(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getYButtonReleased()) {
+			if (xbox.getYButtonPressed()) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					d.runFR(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					d.runFR(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getYButtonReleased()) {
 				d.runFR(0);
 			}
-			if (xboxDrive.getBumperPressed(Hand.kLeft)) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					a.runL(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					a.runL(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getBumperReleased(Hand.kLeft)) {
+			if (xbox.getBumperPressed(Hand.kLeft)) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					a.runL(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					a.runL(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getBumperReleased(Hand.kLeft)) {
 				a.runL(0);
 			}
-			if (xboxDrive.getBumperPressed(Hand.kRight)) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					a.runR(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					a.runR(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getBumperReleased(Hand.kRight)) {
+			if (xbox.getBumperPressed(Hand.kRight)) {
+				if (xbox.getTriggerAxis(Hand.kRight) >= 60 && xbox.getTriggerAxis(Hand.kLeft) < 60)
+					a.runR(xbox.getTriggerAxis(Hand.kLeft));
+				if (xbox.getTriggerAxis(Hand.kLeft) >= 60 && xbox.getTriggerAxis(Hand.kRight) < 60)
+					a.runR(-xbox.getTriggerAxis(Hand.kLeft));
+			} else if (xbox.getBumperReleased(Hand.kRight)) {
 				a.runR(0);
 			}
 			break;
@@ -215,34 +188,34 @@ public class Robot extends IterativeRobot {
 			// press Y to set piston "forward"
 			// press B to set piston "reverse"
 			// press X to set piston "off"
-			if (xboxDrive.getYButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
+			if (xbox.getYButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(0, 2);
-				else if (xboxDrive.getBumper(Hand.kRight))
+				else if (xbox.getBumper(Hand.kRight))
 					a.runPiston(1, 2);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5)
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5)
 					a.runPiston(2, 2);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5)
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5)
 					a.runPiston(3, 2);
 			}
-			if (xboxDrive.getBButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
+			if (xbox.getBButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(0, 1);
-				else if (xboxDrive.getBumper(Hand.kRight))
+				else if (xbox.getBumper(Hand.kRight))
 					a.runPiston(1, 1);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5)
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5)
 					a.runPiston(2, 1);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5)
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5)
 					a.runPiston(3, 1);
 			}
-			if (xboxDrive.getAButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
+			if (xbox.getAButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(0, 0);
-				else if (xboxDrive.getBumper(Hand.kRight))
+				else if (xbox.getBumper(Hand.kRight))
 					a.runPiston(1, 0);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5)
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5)
 					a.runPiston(2, 0);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5)
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5)
 					a.runPiston(3, 0);
 			}
 			break;
@@ -250,34 +223,34 @@ public class Robot extends IterativeRobot {
 			// Hold LB, RB, LT, or RT to choose piston (bumpers forward, triggers up)
 			// press Y to set piston "on"
 			// press X to set piston "off"
-			if (xboxDrive.getYButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
+			if (xbox.getYButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(0, true);
-				else if (xboxDrive.getBumperPressed(Hand.kRight))
+				else if (xbox.getBumperPressed(Hand.kRight))
 					a.runPiston(1, true);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5) 
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5) 
 					a.runPiston(2, true);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5) 
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5) 
 					a.runPiston(3, true);
 			}
-			if (xboxDrive.getAButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
+			if (xbox.getAButtonPressed()) {
+				if (xbox.getBumperPressed(Hand.kLeft))
 					a.runPiston(0, false);
-				else if (xboxDrive.getBumperPressed(Hand.kRight))
+				else if (xbox.getBumperPressed(Hand.kRight))
 					a.runPiston(1, false);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5) 
+				else if (xbox.getTriggerAxis(Hand.kLeft)>.5) 
 					a.runPiston(2, false);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5) 
+				else if (xbox.getTriggerAxis(Hand.kRight)>.5) 
 					a.runPiston(3, false);
 			}
 
 			break;
 		}
-		if (xboxDrive.getPOV() == Const.povRight && testmode < 2) {
+		if (xbox.getPOV() == Const.povRight && testmode < 2) {
 			testmode++;
 			testInit();
 		}
-		if (xboxDrive.getPOV() == Const.povLeft && testmode > 0) {
+		if (xbox.getPOV() == Const.povLeft && testmode > 0) {
 			testmode--;
 			testInit();
 		}
