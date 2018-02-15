@@ -15,6 +15,14 @@ public class Const {
 	public static int armLIntake = 4;
 	public static int armRIntake = 5;
 	public static int lift = 6;
+	public static final int buttonA = 1;
+	public static final int buttonB = 2;
+	public static final int buttonX = 3;
+	public static final int buttonY = 4;
+	public static final int buttonL = 5;
+	public static final int buttonR = 6;
+	public static final int buttonBack = 7;
+	public static final int buttonStart = 8;
 	//pneumatic pistons -- finalize these
 	public static int armLFwd = 0;
 	public static int armLRev = 0;
@@ -22,6 +30,12 @@ public class Const {
 	public static int armRRev = 0;
 	public static int armLUp = 0;
 	public static int armRUp = 0;
+	public static int firstLiftUP = 0;
+	public static int firstLiftdown = 0;
+	public static int carriage1Out =0;
+	public static int carriage1In =0;
+	public static int carriage2Out =0;
+	public static int carriage2In =0;
 	public static int armLUpFwd = 0;
 	public static int armLUpRev = 0;
 	public static int armRUpFwd = 0;
@@ -32,6 +46,7 @@ public class Const {
 	public static int jstickL = 0;//left flight stick
 	public static int jstickR = 0;//right flight stick
 	public static int xbox = 0;//xbox controller
+	public static int xboxManipulator=0;
 	public static int box = 0;//autonomous control box
 	//joysticc POVs
 	public static int povUp = 0;
