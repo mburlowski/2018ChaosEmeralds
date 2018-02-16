@@ -9,6 +9,7 @@ public class SecondLift {
 
 public void lift(double speed) 
 {
-liftMotor.set(ControlMode.PercentOutput,speed);	
+liftMotor.set(ControlMode.PercentOutput,speed);
+
 }
 	}

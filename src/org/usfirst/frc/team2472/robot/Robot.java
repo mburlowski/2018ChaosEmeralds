@@ -115,23 +115,45 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		d.tankDrive(xboxDrive);
+		d.XBoxDrive(xboxDrive,1.0);
+		int liftNum=0;
 		if(!First.lifted&&xbox.getRawButton(Const.buttonA)) {
-				First.liftUp();
+			liftNum=1;
 		}else if(xbox.getRawButton(Const.buttonA)&&First.lifted) {
-				First.liftDown();
+			liftNum=2;
 		}
-		Second.lift(xbox.getRawAxis(0)-xbox.getRawAxis(1));
+		if(liftNum==1)First.liftUp();
+		if(liftNum==2)First.liftDown();
+		Second.lift(xbox.getRawAxis(2)-xbox.getRawAxis(3));
 		//each axis controls a direction
-		if(xbox.getRawButton(Const.buttonB)) {
-			a.takeIn(1.0);
-		}
-		if(xbox.getRawButton(Const.buttonL)) {
+		int sw = 0;
+		int grabPosition=0;
+		if(!a.grab&&xbox.getRawButton(Const.buttonB)) {
+			a.grab();
+			grabPosition=1;
+		}else if(xbox.getRawButton(Const.buttonB)&&a.grab) {
 			a.release();
+			grabPosition=2;
 		}
-		if(xbox.getRawButton(Const.buttonX)) {
-			c.In();
+		if(grabPosition==1) {a.grab();
 		}
+	else if(grabPosition==2) {a.release();
+	}
+		a.takeIn(xbox.getRawAxis(1));
+		
+		if(xbox.getRawButton(Const.buttonX)&&c.out) {
+			
+			sw=1;
+			
+		}
+		if(xbox.getRawButton(Const.buttonX)&&c.in) {
+		
+			sw=2;
+			
+		}
+		if(sw==2) c.Out();
+		if(sw==1) c.In();
+		
 	}
 
 	@Override
@@ -142,14 +164,15 @@ public class Robot extends IterativeRobot {
 	}
 
 	@Override
+	/*
 	public void testPeriodic() {
 		// DPad left and right switch test modes
 		SmartDashboard.putNumber("BL Motor", d.bL.getMotorOutputPercent());
 		SmartDashboard.putNumber("BR Motor", d.bR.getMotorOutputPercent());
 		SmartDashboard.putNumber("FL Motor", d.fL.getMotorOutputPercent());
 		SmartDashboard.putNumber("FR Motor", d.fR.getMotorOutputPercent());
-		SmartDashboard.putNumber("IL Motor", a.intakeL.getMotorOutputPercent());
-		SmartDashboard.putNumber("IR Motor", a.intakeR.getMotorOutputPercent());
+		SmartDashboard.putNumber("IL Motor", a.intakeLeftArm.getMotorOutputPercent());
+		SmartDashboard.putNumber("IR Motor", a.intakeRightArm.getMotorOutputPercent());
 		switch (testmode) {
 
 		case 0:
@@ -283,4 +306,5 @@ public class Robot extends IterativeRobot {
 		}
 
 	}
+	*/
 }

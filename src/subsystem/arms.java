@@ -9,27 +9,26 @@ import edu.wpi.first.wpilibj.Solenoid;
 import objects.Action;
 
 public class arms extends Action {
-	DoubleSolenoid pistonLF, pistonRF, pistonLU, pistonRU;
+	DoubleSolenoid pistonLeftArm, pistionRightArm, pistonLU, pistonRU;
 	Solenoid pistonLFA, pistonRFA, pistonLUA, pistonRUA;
-	public TalonSRX intakeL, intakeR;
+	public boolean grab;
+	public boolean release;
+	public TalonSRX intakeLeftArm, intakeRightArm;
 
 	public arms() {
-		pistonLF = new DoubleSolenoid(Const.armLFwd, Const.armLRev);
-		pistonRF = new DoubleSolenoid(Const.armRFwd, Const.armRRev);
-		pistonLU = new DoubleSolenoid(Const.armLUpFwd, Const.armLUpRev);
-		pistonRU = new DoubleSolenoid(Const.armRUpFwd, Const.armRUpRev);
-		pistonLFA = new Solenoid(Const.armL);
-		pistonRFA = new Solenoid(Const.armR);
-		intakeL = new TalonSRX(Const.armLIntake);
-		intakeR = new TalonSRX(Const.armRIntake);
+		pistonLeftArm = new DoubleSolenoid(Const.armLFwd, Const.armLRev);
+		pistionRightArm = new DoubleSolenoid(Const.armRFwd, Const.armRRev);
+		intakeLeftArm = new TalonSRX(Const.armLIntake);
+		intakeRightArm = new TalonSRX(Const.armRIntake);
 	}
 
 	/** Closes arms */
 	public void grab() {
-		pistonLF.set(DoubleSolenoid.Value.kForward);
-		pistonRF.set(DoubleSolenoid.Value.kForward);
+		pistonLeftArm.set(DoubleSolenoid.Value.kForward);
+		pistionRightArm.set(DoubleSolenoid.Value.kForward);
 	}
 	/**Closes one side; true=right*/
+	
 	public void halfGrab(boolean side) {
 		if(side) {
 			pistonRFA.set(true);
@@ -40,53 +39,51 @@ public class arms extends Action {
 
 	/** Opens arms */
 	public void release() {
-		pistonLF.set(DoubleSolenoid.Value.kReverse);
-		pistonRF.set(DoubleSolenoid.Value.kReverse);
+		pistonLeftArm.set(DoubleSolenoid.Value.kReverse);
+		pistionRightArm.set(DoubleSolenoid.Value.kReverse);
 	}
 	
-	public void rise() {
-		
-	}
 
 	/** Makes intake take in */
 	public void takeIn(double spped) {
-		intakeL.set(ControlMode.PercentOutput, spped);
-		intakeR.set(ControlMode.PercentOutput, spped);
+		intakeLeftArm.set(ControlMode.PercentOutput, spped);
+		intakeRightArm.set(ControlMode.PercentOutput, spped);
 	}
 
 	/** Makes intake push out */
 	public void takeOut(double spped) {
-		intakeL.set(ControlMode.PercentOutput, -spped);
-		intakeR.set(ControlMode.PercentOutput, -spped);
+		intakeLeftArm.set(ControlMode.PercentOutput, -spped);
+		intakeRightArm.set(ControlMode.PercentOutput, -spped);
 	}
 
 	/** Runs only the left intake motor */
 	public void runL(double spped) {
-		intakeL.set(ControlMode.PercentOutput, spped);
+		intakeLeftArm.set(ControlMode.PercentOutput, spped);
 	}
 
 	/** Runs only the right intake motor */
 	public void runR(double spped) {
-		intakeR.set(ControlMode.PercentOutput, spped);
+		intakeRightArm.set(ControlMode.PercentOutput, spped);
 	}
 
 	/** Stops all intake motors */
 	public void stop() {
-		intakeL.set(ControlMode.PercentOutput, 0);
-		intakeR.set(ControlMode.PercentOutput, 0);
+		intakeLeftArm.set(ControlMode.PercentOutput, 0);
+		intakeRightArm.set(ControlMode.PercentOutput, 0);
 	}
 
 	/** First is left-forward(0), right-forward(1), left-up(2), right-up(3); second is off(0) rev(1) or fwd(2) */
+	/*
 	public void runPiston(int which, int state) {
 		
 		switch (state) {
 		case 0:
 			switch(which) {
 			case 0:
-				pistonLF.set(DoubleSolenoid.Value.kOff);
+				pistonLeftArm.set(DoubleSolenoid.Value.kOff);
 				break;
 			case 1:
-				pistonRF.set(DoubleSolenoid.Value.kOff);
+				pistionRightArm.set(DoubleSolenoid.Value.kOff);
 				break;
 			case 2:
 				pistonLU.set(DoubleSolenoid.Value.kOff);
@@ -98,10 +95,10 @@ public class arms extends Action {
 		case 1:
 			switch(which) {
 			case 0:
-				pistonLF.set(DoubleSolenoid.Value.kReverse);
+				pistonLeftArm.set(DoubleSolenoid.Value.kReverse);
 				break;
 			case 1:
-				pistonRF.set(DoubleSolenoid.Value.kReverse);
+				pistionRightArm.set(DoubleSolenoid.Value.kReverse);
 				break;
 			case 2:
 				pistonLU.set(DoubleSolenoid.Value.kReverse);
@@ -113,10 +110,10 @@ public class arms extends Action {
 		case 2:
 			switch(which) {
 			case 0:
-				pistonLF.set(DoubleSolenoid.Value.kForward);
+				pistonLeftArm.set(DoubleSolenoid.Value.kForward);
 				break;
 			case 1:
-				pistonRF.set(DoubleSolenoid.Value.kForward);
+				pistionRightArm.set(DoubleSolenoid.Value.kForward);
 				break;
 			case 2:
 				pistonLU.set(DoubleSolenoid.Value.kForward);
@@ -128,8 +125,10 @@ public class arms extends Action {
 		}
 
 	}
-
+	*/
+	
 	/** First is left-forward(0), right-forward(1), left-up(2), right-up(3); second is off(f) or on(t) */
+	/*
 	public void runPiston(int which, boolean state) {
 		switch (which) {
 		case 0:
@@ -146,4 +145,5 @@ public class arms extends Action {
 			break;
 	}
 	}
+	*/
 }
