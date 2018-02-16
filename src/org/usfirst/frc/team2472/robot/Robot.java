@@ -115,23 +115,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		d.tankDrive(xboxDrive);
-		if(!First.lifted&&xbox.getRawButton(Const.buttonA)) {
-				First.liftUp();
-		}else if(xbox.getRawButton(Const.buttonA)&&First.lifted) {
-				First.liftDown();
-		}
-		Second.lift(xbox.getRawAxis(0)-xbox.getRawAxis(1));
-		//each axis controls a direction
-		if(xbox.getRawButton(Const.buttonB)) {
-			a.takeIn(1.0);
-		}
-		if(xbox.getRawButton(Const.buttonL)) {
-			a.release();
-		}
-		if(xbox.getRawButton(Const.buttonX)) {
-			c.In();
-		}
+
+
+		d.tankDrive(xbox);
 	}
 
 	@Override
@@ -142,14 +128,15 @@ public class Robot extends IterativeRobot {
 	}
 
 	@Override
+	/*
 	public void testPeriodic() {
 		// DPad left and right switch test modes
 		SmartDashboard.putNumber("BL Motor", d.bL.getMotorOutputPercent());
 		SmartDashboard.putNumber("BR Motor", d.bR.getMotorOutputPercent());
 		SmartDashboard.putNumber("FL Motor", d.fL.getMotorOutputPercent());
 		SmartDashboard.putNumber("FR Motor", d.fR.getMotorOutputPercent());
-		SmartDashboard.putNumber("IL Motor", a.intakeL.getMotorOutputPercent());
-		SmartDashboard.putNumber("IR Motor", a.intakeR.getMotorOutputPercent());
+		SmartDashboard.putNumber("IL Motor", a.intakeLeftArm.getMotorOutputPercent());
+		SmartDashboard.putNumber("IR Motor", a.intakeRightArm.getMotorOutputPercent());
 		switch (testmode) {
 
 		case 0:
@@ -283,4 +270,5 @@ public class Robot extends IterativeRobot {
 		}
 
 	}
+	*/
 }

@@ -13,6 +13,7 @@ import objects.Action;
 
 public class drive extends Action {
 	public TalonSRX bL, fL, bR, fR;
+	double leftSide,rightSide;
 	isGonnaCrashAh gonnaCrashL, gonnaCrashR;
 	AnalogInput distSensL, distSensR;
 
@@ -21,41 +22,21 @@ public class drive extends Action {
 		fL = new TalonSRX(Const.motorBR);
 		bR = new TalonSRX(Const.motorFL);
 		fR = new TalonSRX(Const.motorFR);
-		//bR.setInverted(true);
-		//fR.setInverted(true);
+		bR.setInverted(true);
+		fR.setInverted(true);
 		gonnaCrashL = new isGonnaCrashAh(Const.dSensL);
 		gonnaCrashR = new isGonnaCrashAh(Const.dSensR);
 		// setInverted is used to enumerate backward motors
 		// usually both motors on one side will be inverted
 	}
 
-	/** Runs a side of the drivetrain forward at desired speed (true = right) */
-	public void runSide(boolean side, double spped) {
-		if (!side) {
-			bL.set(ControlMode.PercentOutput, spped);
-			fL.follow(bL);
-		} else {
-			bR.set(ControlMode.PercentOutput, spped);
-			fR.follow(bR);
-		}
-	}
-
-	/** Runs a side of the drivetrain backwards at desired speed (true = right) */
-	public void runMotorReverse(boolean side, double spped) {
-		if (!side) {
-			bL.set(ControlMode.PercentOutput, spped);
-			fL.set(ControlMode.PercentOutput, spped);
-		} else {
-			bR.set(ControlMode.PercentOutput, spped);
-			fR.set(ControlMode.PercentOutput, spped);
-		}
-	}
+	
 
 	/** Stops all motors */
 	public void stopMotors() {
-		bL.set(ControlMode.PercentOutput, 0.0);
+		//bL.set(ControlMode.PercentOutput, 0.0);
 		fL.set(ControlMode.PercentOutput, 0.0);
-		bR.set(ControlMode.PercentOutput, 0.0);
+		//bR.set(ControlMode.PercentOutput, 0.0);
 		fR.set(ControlMode.PercentOutput, 0.0);
 	}
 
@@ -85,6 +66,71 @@ public class drive extends Action {
 			bR.set(ControlMode.PercentOutput, x.getY(Hand.kRight) * ((gonnaCrashR.isNearWall()) ? .5 : 1));
 			fR.follow(bR);
 		}
+	}
+	public void XBoxDrive(XboxController xbox,double baseSpeed){
+
+		/* This is a control scheme inspired by rocket league.
+
+		 * 
+
+		 * Pressing left trigger is reverse and pressing right trigger is forward. 
+
+		 * The left thumb stick controls turning. Pushing the stick left will do will
+
+		 * turn left and pushing the stick right will turn left
+
+		 * 
+
+		 */
+
+		if(xbox.getRawButton(2)){
+
+			if(xbox.getRawAxis(0)<0) {
+
+				rightSide= -xbox.getRawAxis(0);
+
+				leftSide=-rightSide;
+
+			}
+
+			if(xbox.getRawAxis(0)>0) {
+
+				leftSide= xbox.getRawAxis(0);
+
+				rightSide=-rightSide;
+
+			}
+
+		} else {
+
+			baseSpeed= -xbox.getRawAxis(2)+xbox.getRawAxis(3);
+
+			if(xbox.getRawAxis(0)<0) {
+
+				leftSide=baseSpeed*(1+xbox.getRawAxis(0));
+
+				rightSide=baseSpeed;
+
+			}
+
+			if(xbox.getRawAxis(0)>0) {
+
+				rightSide=baseSpeed*(1-xbox.getRawAxis(0));
+
+				leftSide=baseSpeed;
+
+			}
+
+		}
+
+		turn(leftSide,rightSide);
+
+		//combines the ax'es of the triggers
+
+		
+
+		
+
 	}
 
 	/**
@@ -148,5 +194,11 @@ public class drive extends Action {
 	/** Runs back left motor at full power */
 	public void runBL(double spped) {
 		bL.set(ControlMode.PercentOutput, spped);
+	}
+	public void speed(double left, double right) 
+	{
+		fL.set(ControlMode.Velocity,left);
+		fR.set(ControlMode.Velocity,right);
+		
 	}
 }

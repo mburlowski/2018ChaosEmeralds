@@ -9,8 +9,8 @@ public class SecondLift {
 
 public void lift(double speed) 
 {
-	//if(liftMotor.getSensorCollection().isFwdLimitSwitchClosed() && speed < 0) speed = 0;
-	//if(liftMotor.getSensorCollection().isRevLimitSwitchClosed() && speed > 0) speed = 0;
-liftMotor.set(ControlMode.PercentOutput,speed);	
+
+liftMotor.set(ControlMode.PercentOutput,speed);
+
 }
 	}
