@@ -117,7 +117,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 
 
-		d.tankDrive(xbox);
+		d.tankDrive(xbox, box);
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	@Override
-	/*
+	
 	public void testPeriodic() {
 		// DPad left and right switch test modes
 		SmartDashboard.putNumber("BL Motor", d.bL.getMotorOutputPercent());
@@ -270,5 +270,5 @@ public class Robot extends IterativeRobot {
 		}
 
 	}
-	*/
+	
 }
