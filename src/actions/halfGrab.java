@@ -17,7 +17,7 @@ public class halfGrab extends Action {
 	}
 
 	public void periodic() {
-		a.halfGrab(dir);
+		//a.halfGrab(dir);
 	}
 
 	public void endAction() {

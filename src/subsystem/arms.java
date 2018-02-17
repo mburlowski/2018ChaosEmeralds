@@ -19,10 +19,12 @@ public class arms extends Action {
 		pistonArm = new DoubleSolenoid(Const.armLFwd, Const.armLRev);
 		intakeLeftArm = new TalonSRX(Const.armLIntake);
 		intakeRightArm = new TalonSRX(Const.armRIntake);
+		intakeLeftArm.setInverted(true);
 	}
 
 	/** Closes arms */
 	public void grab() {
+		grab=true;
 		pistonArm.set(DoubleSolenoid.Value.kForward);
 	}
 	/**Closes one side; true=right*/
@@ -30,6 +32,7 @@ public class arms extends Action {
 	
 	/** Opens arms */
 	public void release() {
+		grab=false;
 		pistonArm.set(DoubleSolenoid.Value.kReverse);
 	}
 	

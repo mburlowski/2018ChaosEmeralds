@@ -20,13 +20,13 @@ public class CameraCube extends Action {
 		Robot.a.release();
 		Robot.a.takeIn(.25);
 		
-		x=Robot.entry.getDouble(0.0);
+	//	x=Robot.entry.getDouble(0.0);
 		double Const = 100.0;
 		double p = 1100.0;
 		double speed = 0.4;
 		System.out.println(x);
 		
-		if(Robot.distSense.getValue()<1600) {
+		if(1==1) {
 		if(x!=0.0&&x>320.0) 
 		{
 			double xoffset = Math.abs(x-320)/p;
@@ -45,7 +45,7 @@ public class CameraCube extends Action {
 			
 			
 		}
-		}else if(Robot.distSense.getValue()>1600) {
+		}else if(1==1) {
 			Robot.a.grab();
 			Robot.d.stopMotors();
 			Robot.a.takeIn(0);

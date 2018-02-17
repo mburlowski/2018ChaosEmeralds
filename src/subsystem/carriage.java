@@ -9,27 +9,27 @@ public class carriage {
 	public boolean mid;
 	public boolean in;
 	DoubleSolenoid Carriage1 =new DoubleSolenoid(Const.carriage1Out,Const.carriage1In);
-	DoubleSolenoid Carriage2 =new DoubleSolenoid(Const.carriage2Out,Const.carriage2In);
+	//DoubleSolenoid Carriage2 =new DoubleSolenoid(Const.carriage2Out,Const.carriage2In);
 	public void Out() {
-		out=true;
-		mid=false;
+	
 		in=false;
 		Carriage1.set(DoubleSolenoid.Value.kForward);
-		Carriage2.set(DoubleSolenoid.Value.kForward);
+	
+	//	Carriage2.set(DoubleSolenoid.Value.kForward);
 	}
 	public void In() {
-		out=false;
-		mid=false;
+	
 		in=true;
 		Carriage1.set(DoubleSolenoid.Value.kReverse);
-		Carriage2.set(DoubleSolenoid.Value.kReverse);
+	
+	//	Carriage2.set(DoubleSolenoid.Value.kReverse);
 	}
 	public void middle() {
 		out=false;
 		mid=true;
 		in=false;
 		Carriage1.set(DoubleSolenoid.Value.kReverse);
-		Carriage2.set(DoubleSolenoid.Value.kForward);
+	
 	}
 
 }

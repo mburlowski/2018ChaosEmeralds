@@ -70,17 +70,11 @@ public class drive extends Action {
 	public void XBoxDrive(XboxController xbox,double baseSpeed){
 
 		/* This is a control scheme inspired by rocket league.
-
 		 * 
-
 		 * Pressing left trigger is reverse and pressing right trigger is forward. 
-
 		 * The left thumb stick controls turning. Pushing the stick left will do will
-
 		 * turn left and pushing the stick right will turn left
-
 		 * 
-
 		 */
 
 		if(xbox.getRawButton(2)){
@@ -101,27 +95,7 @@ public class drive extends Action {
 
 			}
 
-		} else {
-
-			baseSpeed= -xbox.getRawAxis(2)+xbox.getRawAxis(3);
-
-			if(xbox.getRawAxis(0)<0) {
-
-				leftSide=baseSpeed*(1+xbox.getRawAxis(0));
-
-				rightSide=baseSpeed;
-
-			}
-
-			if(xbox.getRawAxis(0)>0) {
-
-				rightSide=baseSpeed*(1-xbox.getRawAxis(0));
-
-				leftSide=baseSpeed;
-
-			}
-
-		}
+		} else {}
 
 		turn(leftSide,rightSide);
 
