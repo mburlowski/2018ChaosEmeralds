@@ -24,7 +24,7 @@ public class lift extends Action {
 		
 	}
 	public void endAction() {
-		Robot.Second.lift(.5);
+		Robot.Second.lift(0);
 		
 	}
 	public boolean isFinished() {

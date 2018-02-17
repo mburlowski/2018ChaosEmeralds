@@ -1,16 +1,18 @@
 package autoActions;
 
+import org.usfirst.frc.team2472.robot.Robot;
+
 import objects.Action;
 
-public class doNothing extends Action {
-	public doNothing(int time) {
+public class extendCarriage extends Action {
+	public extendCarriage(int time) {
 		timeout=time;
 	}
 	public void startAction() {
-		
+		Robot.c.Out();
 	}
 	public void periodic() {
-		
+		Robot.c.Out();
 	}
 	public void endAction() {
 		
