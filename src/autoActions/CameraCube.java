@@ -13,7 +13,7 @@ public class CameraCube extends Action {
 		timeout=time;
 	}
 	public void startAction() {
-		.
+		
 		
 	}
 	public void periodic() {
@@ -26,7 +26,7 @@ public class CameraCube extends Action {
 		double speed = 0.4;
 		System.out.println(x);
 		
-		if(Robot.distSens.getValue()<1600) {
+		if(Robot.distSense.getValue()<1600) {
 		if(x!=0.0&&x>320.0) 
 		{
 			double xoffset = Math.abs(x-320)/p;
@@ -45,9 +45,9 @@ public class CameraCube extends Action {
 			
 			
 		}
-		}else if(Robot.distSens.getValue()>1600) {
+		}else if(Robot.distSense.getValue()>1600) {
 			Robot.a.grab();
-			Robot.d.stop();
+			Robot.d.stopMotors();
 			Robot.a.takeIn(0);
 	}
 		

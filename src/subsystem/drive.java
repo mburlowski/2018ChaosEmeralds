@@ -24,8 +24,8 @@ public class drive extends Action {
 		fR = new TalonSRX(Const.motorFR);
 		bR.setInverted(true);
 		fR.setInverted(true);
-		gonnaCrashL = new isGonnaCrashAh(Const.dSensL);
-		gonnaCrashR = new isGonnaCrashAh(Const.dSensR);
+//		gonnaCrashL = new isGonnaCrashAh(Const.dSensL);
+	//	gonnaCrashR = new isGonnaCrashAh(Const.dSensR);
 		// setInverted is used to enumerate backward motors
 		// usually both motors on one side will be inverted
 	}

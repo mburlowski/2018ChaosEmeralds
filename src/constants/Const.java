@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 
 public class Const {
 	//distance sensors -- finalize these
-	public static int dSensL = 0;
+	public static int dSense = 0;
 	public static int dSensR = 0;
 	//Talons
 	public static int motorBL = 0;

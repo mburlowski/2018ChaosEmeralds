@@ -11,8 +11,14 @@ import java.util.ArrayList;
 
 import com.kauailabs.nav6.frc.IMUAdvanced;
 
+import autoActions.armIntake;
 import autoActions.doNothing;
+import autoActions.extendCarriage;
+import autoActions.lift;
+import autoActions.pathFollower;
 import constants.Const;
+import constants.ConstPaths;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -39,11 +45,13 @@ import subsystem.drive;
  * project.
  */
 public class Robot extends IterativeRobot {
+	boolean scaleClose,switchClose;
 	Compressor compress=new Compressor(0);
-	AnalogInput distSensL = new AnalogInput(Const.dSensL);
-	AnalogInput distSensR = new AnalogInput(Const.dSensR);
+	public static AnalogInput distSense = new AnalogInput(Const.dSense);
+	public static NetworkTableEntry entry;
 	Joystick xbox =new Joystick(Const.xboxManipulator);
 	public static drive d = new drive();
+	char fieldSide='q';
 	public static arms a = new arms();
 	public static carriage c =new carriage();
 	public static FirstLift First=new FirstLift();
@@ -93,13 +101,101 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		if(box.getRawButton(4))fieldSide='L';
+		if(box.getRawButton(5))fieldSide='M';
+		if(box.getRawButton(6))fieldSide='R';
 		gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
-		for (int i = 0; i < gameData.length; i++)
-			automode[i] = (gameData[i] == 'R');
-		if (box.getRawButton(1)) {
-			step.add(new doNothing(15));
-			step2.add(new doNothing(15));
+		//2 chances to get the data in AUTOinit
+		if(gameData.length>0) {
+			
+			
+		}else 
+		{
+			gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
+			
 		}
+		switchClose=(gameData[0]==fieldSide);
+		scaleClose=(gameData[1]==fieldSide);
+		if(scaleClose&&switchClose) 
+		{
+			//if both are close
+			if(box.getRawButton(7)) 
+			{
+			//scale	
+				hitScale();
+				
+			}
+			if(box.getRawButton(8)) 
+			{
+				hitSwitch();
+			//switch
+			}
+			if(box.getRawButton(9)) 
+			{
+			//both switch and scale
+			}
+		}else if(scaleClose&&!switchClose) 
+		{
+			if(box.getRawButton(7)) 
+			{
+			//scale	
+				hitScale();
+			}
+			if(box.getRawButton(8)) 
+			{
+			//switch
+			}
+			if(box.getRawButton(9)) 
+			{
+			//both switch and scale(DO NOT USE NOT ENOUGH TIME DEFERS to just switch)
+			}
+		}else if(!scaleClose&&switchClose) 
+		{
+			if(box.getRawButton(7)) 
+			{
+			//scale	
+				
+			}
+			if(box.getRawButton(8)) 
+			{
+				hitSwitch();
+			//switch
+			}
+			if(box.getRawButton(9)) 
+			{
+				//both switch and scale(DO NOT USE NOT ENOUGH TIME DEFERS to just switch)
+			}
+		}else if(scaleClose&&!switchClose) 
+		{
+			if(box.getRawButton(7)) 
+			{
+			//scale	
+				hitScale();
+			}
+			if(box.getRawButton(8)) 
+			{
+			//switch
+			}
+			if(box.getRawButton(9)) 
+			{
+				//both switch and scale(DO NOT USE NOT ENOUGH TIME DEFERS to just switch)
+			}
+		}else if(!scaleClose&&!switchClose) 
+		{
+			if(box.getRawButton(7)) 
+			{
+			//scale	
+			}
+			if(box.getRawButton(8)) 
+			{
+			//switch
+			}
+			if(box.getRawButton(9)) 
+			{
+			//both switch and scale(TEST, there may be enough time)
+			}
+		}
+		
 	}
 
 	/**
@@ -202,6 +298,7 @@ public class Robot extends IterativeRobot {
 			// press Y to set piston "forward"
 			// press B to set piston "reverse"
 			// press X to set piston "off"
+			/*
 			if (xboxDrive.getYButtonPressed()) {
 				if (xboxDrive.getBumperPressed(Hand.kLeft))
 					a.runPiston(0, 2);
@@ -266,9 +363,44 @@ public class Robot extends IterativeRobot {
 		}
 		if (xboxDrive.getPOV() == Const.povLeft && testmode > 0) {
 			testmode--;
-			testInit();
+			testInit();*/
 		}
 
+	}
+	public void hitScale() {
+		if(gameData[1]=='L') {
+			step.add(new pathFollower(ConstPaths.longScale, ConstPaths.shortScale, ConstPaths.shortScale.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+		}else {
+			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale, ConstPaths.shortScale.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+		}
+	}
+	public void hitSwitch() {
+		if(gameData[1]=='L') {
+			step.add(new pathFollower(ConstPaths.longSwitch, ConstPaths.shortSwitch, ConstPaths.shortSwitch.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+		}else {
+			step.add(new pathFollower(ConstPaths.shortSwitch, ConstPaths.longSwitch, ConstPaths.shortSwitch.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+		}
+		
 	}
 	
 }
