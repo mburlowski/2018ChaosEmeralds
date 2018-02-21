@@ -5,6 +5,7 @@ import org.usfirst.frc.team2472.robot.Robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import objects.Action;
 
 public class CameraCube extends Action {
@@ -13,24 +14,26 @@ public class CameraCube extends Action {
 		timeout=time;
 	}
 	public void startAction() {
-		
+		super.startAction();
 		
 	}
 	public void periodic() {
+		
+		System.out.println(x);
 		Robot.a.release();
 		Robot.a.takeIn(.25);
 		
-	//	x=Robot.entry.getDouble(0.0);
+		x=Robot.entry.getDouble(0.0);
 		double Const = 100.0;
 		double p = 1100.0;
 		double speed = 0.4;
 		System.out.println(x);
 		
-		if(1==1) {
+		if(Robot.distSense.getValue()<1600) {
 		if(x!=0.0&&x>320.0) 
 		{
 			double xoffset = Math.abs(x-320)/p;
-			System.out.print(" xoffset: "+(1-xoffset)+" ");
+			//System.out.print(" xoffset: "+(1-xoffset)+" ");
 
 			Robot.d.turn(speed, (1-xoffset)*speed);
 			
@@ -38,6 +41,7 @@ public class CameraCube extends Action {
 		}else if(x<320.0&&x!=0.0)
 		{
 			double xoffset = Math.abs(x-320)/p;
+			System.out.println(x);
 			System.out.print(" xoffset: "+xoffset+" ");
 			
 			Robot.d.turn((1-xoffset)*speed, speed);
@@ -45,7 +49,7 @@ public class CameraCube extends Action {
 			
 			
 		}
-		}else if(1==1) {
+		}else if(Robot.distSense.getValue()>1600) {
 			Robot.a.grab();
 			Robot.d.stopMotors();
 			Robot.a.takeIn(0);

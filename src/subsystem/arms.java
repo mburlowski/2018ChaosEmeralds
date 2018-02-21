@@ -14,6 +14,7 @@ public class arms extends Action {
 	public boolean grab;
 	public boolean release;
 	public TalonSRX intakeLeftArm, intakeRightArm;
+	public long time=0;
 
 	public arms() {
 		pistonArm = new DoubleSolenoid(Const.armLFwd, Const.armLRev);
@@ -25,6 +26,7 @@ public class arms extends Action {
 	/** Closes arms */
 	public void grab() {
 		grab=true;
+		time=System.currentTimeMillis();
 		pistonArm.set(DoubleSolenoid.Value.kForward);
 	}
 	/**Closes one side; true=right*/
@@ -32,6 +34,7 @@ public class arms extends Action {
 	
 	/** Opens arms */
 	public void release() {
+		time=System.currentTimeMillis();
 		grab=false;
 		pistonArm.set(DoubleSolenoid.Value.kReverse);
 	}

@@ -7,20 +7,26 @@ import objects.Action;
 public class pathFollower extends Action {
 	double[] left,right;
 	int length;
-	double step;
+	double step=0;
 	double math=1024/15.7;
-	public pathFollower(double[] leftSide,double[] rightSide,int totalLength) {
+	public pathFollower(int time,double[] leftSide,double[] rightSide,int totalLength) {
 		left=leftSide;
+		timeout=time;
 		right=rightSide;
 		length=totalLength;
 		
+		
 	}
 	public void startAction() {
+		super.startAction();
+		step=0;
 		
 	}
 	public void periodic() {
+	
+		step=step+.2;
 		if(length>=(int)(step)) {
-			step=step+.2;
+			
 			Robot.d.speed(math*left[(int)step],math*right[(int)step]);
 		}else {
 			endAction();
@@ -30,6 +36,18 @@ public class pathFollower extends Action {
 		
 	}
 	public boolean isFinished() {
-		return true;
+if(isTimedOut()){
+			
+			endAction();
+			
+			return true;
+			
+		}
+		
+		else{
+		
+			return false;
+			
+		}
 	}
 }

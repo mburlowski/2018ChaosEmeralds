@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 
 public class Const {
+	public static double DeadZone=.0003;
 	//distance sensors -- finalize these
 	public static int dSense = 0;
 	public static int dSensR = 0;
@@ -29,8 +30,8 @@ public class Const {
 	public static int armLRev = 3;
 	public static int carriage1Out =4;
 	public static int carriage1In =5;
-	public static int firstLiftUP = 0;
-	public static int firstLiftdown = 1;
+	public static int firstLiftUP = 1;
+	public static int firstLiftdown = 0;
 
 	
 	

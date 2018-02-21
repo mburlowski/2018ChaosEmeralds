@@ -8,36 +8,56 @@ import constants.Const;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import objects.Action;
 
 public class drive extends Action {
 	public TalonSRX bL, fL, bR, fR;
 	double leftSide,rightSide;
+	
 	isGonnaCrashAh gonnaCrashL, gonnaCrashR;
 	AnalogInput distSensL, distSensR;
 
 	public drive() {
 		bL = new TalonSRX(Const.motorBL);
-		fL = new TalonSRX(Const.motorBR);
-		bR = new TalonSRX(Const.motorFL);
+		fL = new TalonSRX(Const.motorFL);
+		bR = new TalonSRX(Const.motorBR);
 		fR = new TalonSRX(Const.motorFR);
 		bR.setInverted(true);
 		fR.setInverted(true);
+		bL.config_kF(0, 1.294, 0);
+		bL.config_kP(0, 2, 0);
+		bL.config_kI(0, 0.02, 0);
+		bL.config_kD(0, 0, 0);
+		
+		bR.config_kF(0, 1.327, 0);
+		bR.config_kP(0, 2, 0);
+		bR.config_kI(0, 0.02, 0);
+		bR.config_kD(0, 0, 0);
+		fL.follow(bL);
+		fR.follow(bR);
+		
+		
 //		gonnaCrashL = new isGonnaCrashAh(Const.dSensL);
 	//	gonnaCrashR = new isGonnaCrashAh(Const.dSensR);
 		// setInverted is used to enumerate backward motors
 		// usually both motors on one side will be inverted
+	}
+	
+	public void followTest() {
+		bL.set(ControlMode.PercentOutput, .5);
+		bR.set(ControlMode.PercentOutput, .5);
 	}
 
 	
 
 	/** Stops all motors */
 	public void stopMotors() {
-		//bL.set(ControlMode.PercentOutput, 0.0);
-		fL.set(ControlMode.PercentOutput, 0.0);
-		//bR.set(ControlMode.PercentOutput, 0.0);
-		fR.set(ControlMode.PercentOutput, 0.0);
+		bL.set(ControlMode.PercentOutput, 0.0);
+		//fL.set(ControlMode.PercentOutput, 0.0);
+		bR.set(ControlMode.PercentOutput, 0.0);
+	//	fR.set(ControlMode.PercentOutput, 0.0);
 	}
 
 	/** Moves the robot linearly based on joystick movement */
@@ -76,26 +96,44 @@ public class drive extends Action {
 		 * turn left and pushing the stick right will turn left
 		 * 
 		 */
-
-		if(xbox.getRawButton(2)){
+		
+		if(xbox.getRawButton(Const.buttonB)){
 
 			if(xbox.getRawAxis(0)<0) {
 
-				rightSide= -xbox.getRawAxis(0);
+				rightSide= xbox.getRawAxis(3)-xbox.getRawAxis(2);
 
 				leftSide=-rightSide;
 
-			}
+			} else if(xbox.getRawAxis(0)>0) {
 
-			if(xbox.getRawAxis(0)>0) {
+				leftSide= xbox.getRawAxis(3)-xbox.getRawAxis(2);
 
-				leftSide= xbox.getRawAxis(0);
-
-				rightSide=-rightSide;
+				rightSide=-leftSide;
 
 			}
 
-		} else {}
+		}else if(Math.abs(xbox.getRawAxis(3)-xbox.getRawAxis(2))<.03){
+		rightSide=0;
+		leftSide=0;
+		
+		}else {
+			if(xbox.getRawAxis(0)>0+Const.DeadZone) {
+
+				rightSide= (xbox.getRawAxis(3)-xbox.getRawAxis(2))*(1-xbox.getRawAxis(0));
+
+				leftSide=xbox.getRawAxis(3)-xbox.getRawAxis(2);
+
+			}
+
+			if(xbox.getRawAxis(0)<0-Const.DeadZone) {
+
+				rightSide= xbox.getRawAxis(3)-xbox.getRawAxis(2);
+
+				leftSide=(xbox.getRawAxis(3)-xbox.getRawAxis(2))*(1+xbox.getRawAxis(0));
+
+			}
+		}
 
 		turn(leftSide,rightSide);
 
@@ -149,6 +187,13 @@ public class drive extends Action {
 		bR.set(ControlMode.PercentOutput, 1.0);
 		fR.set(ControlMode.PercentOutput, 1.0);
 	}
+	
+	public void putToSmartDashEncoder() {
+		SmartDashboard.putNumber("Left Encoder", bL.getSelectedSensorVelocity(0));
+		SmartDashboard.putNumber("Right Encoder", bR.getSelectedSensorVelocity(0));
+		
+		//System.out.println("Left Encoder "+bL.getSelectedSensorVelocity(0)+" Right Encoder "+bR.getSelectedSensorVelocity(0));
+	}
 
 	/** Runs front right motor at full power */
 	public void runFR(double spped) {
@@ -171,8 +216,10 @@ public class drive extends Action {
 	}
 	public void speed(double left, double right) 
 	{
-		fL.set(ControlMode.Velocity,left);
-		fR.set(ControlMode.Velocity,right);
+		bL.set(ControlMode.Velocity,left);
+		bR.set(ControlMode.Velocity,right);
 		
 	}
+	
+
 }
