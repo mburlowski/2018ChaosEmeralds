@@ -24,6 +24,7 @@ public class Const {
 	public static final int buttonBack = 7;
 	public static final int buttonStart = 8;
 	//pneumatic pistons -- finalize these
+<<<<<<< HEAD
 	public static int armLFwd = 0;
 	public static int armLRev = 0;
 	public static int armRFwd = 0;
@@ -36,6 +37,17 @@ public class Const {
 	public static int carriage1In =0;
 	public static int carriage2Out =0;
 	public static int carriage2In =0;
+=======
+	public static int armLFwd = 2;
+	public static int armLRev = 3;
+	public static int carriage1Out =4;
+	public static int carriage1In =5;
+	public static int firstLiftUP = 0;
+	public static int firstLiftdown = 1;
+
+	
+	
+>>>>>>> parent of 1c3930b... more!!!
 	public static int armLUpFwd = 0;
 	public static int armLUpRev = 0;
 	public static int armRUpFwd = 0;

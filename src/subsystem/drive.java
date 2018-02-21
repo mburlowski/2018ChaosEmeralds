@@ -91,6 +91,7 @@ public class drive extends Action {
 
 				leftSide=-rightSide;
 
+<<<<<<< HEAD
 			}
 
 			if(xbox.getRawAxis(0)>0) {
@@ -122,6 +123,19 @@ public class drive extends Action {
 			}
 
 		}
+=======
+			}
+
+			if(xbox.getRawAxis(0)>0) {
+
+				leftSide= xbox.getRawAxis(0);
+
+				rightSide=-rightSide;
+
+			}
+
+		} else {}
+>>>>>>> parent of 1c3930b... more!!!
 
 		turn(leftSide,rightSide);
 

@@ -45,10 +45,17 @@ import subsystem.drive;
  * project.
  */
 public class Robot extends IterativeRobot {
+<<<<<<< HEAD
+=======
+	int armPos=0;
+	int liftPos=0;
+	int carriagePos=0;
+//	UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture();
+>>>>>>> parent of 1c3930b... more!!!
 	boolean scaleClose,switchClose;
 	Compressor compress=new Compressor(0);
-	public static AnalogInput distSense = new AnalogInput(Const.dSense);
-	public static NetworkTableEntry entry;
+	//public static AnalogInput distSense = new AnalogInput(Const.dSense);
+	//public static NetworkTableEntry entry;
 	Joystick xbox =new Joystick(Const.xboxManipulator);
 	public static drive d = new drive();
 	char fieldSide='q';
@@ -69,6 +76,12 @@ public class Robot extends IterativeRobot {
 	ArrayList<Action> step = new ArrayList<Action>();
 	ArrayList<Action> step2 = new ArrayList<Action>();
 	int nAction = 0;
+<<<<<<< HEAD
+=======
+	
+	//NetworkTableInstance offSeasonNetworkTable;
+	String gameDataInit;
+>>>>>>> parent of 1c3930b... more!!!
 
 	char[] gameData;
 	boolean[] automode; // left = false, right = true
@@ -81,10 +94,23 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+<<<<<<< HEAD
+=======
+//		cam0.setFPS(20);
+//		cam0.setResolution(640, 480);
+>>>>>>> parent of 1c3930b... more!!!
 		compress.setClosedLoopControl(true);
 		imu.zeroYaw();
 		// smartdashboard shtuff
+<<<<<<< HEAD
 		SmartDashboard.putNumber("A. Number", .1);
+=======
+	//	SmartDashboard.putNumber("A. Number", .1);
+		
+		//offSeasonNetworkTable = NetworkTableInstance.create();
+		//offSeasonNetworkTable.startClient("10.0.100.5");
+	//	gameDataInit = offSeasonNetworkTable.getTable("OffseasonFMSInfo").getEntry("GameData").getString("defaultValue");
+>>>>>>> parent of 1c3930b... more!!!
 	}
 
 	/**
@@ -104,6 +130,7 @@ public class Robot extends IterativeRobot {
 		if(box.getRawButton(4))fieldSide='L';
 		if(box.getRawButton(5))fieldSide='M';
 		if(box.getRawButton(6))fieldSide='R';
+<<<<<<< HEAD
 		gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
 		//2 chances to get the data in AUTOinit
 		if(gameData.length>0) {
@@ -177,6 +204,61 @@ public class Robot extends IterativeRobot {
 			//switch
 			}
 			if(box.getRawButton(9)) 
+=======
+		//gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
+		//For off season
+		//gameData = gameDataInit.toCharArray();
+
+		//2 chances to get the data in AUTOinit
+		/*switch(fieldSide) {
+			case('L'):
+				if(gameData[0]=='L') 
+				{	
+					// TODO left side to left Switch
+				}
+				else 
+				{
+					// TODO leftside to right Switch
+				}
+					
+					
+				break;
+			case('M'):
+				if(gameData[0])
+				break;
+			case('R'):
+				break;
+			
+		}*/
+			if(gameData.length==0) {
+				
+			}else 
+			{
+			//gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
+				
+			}
+			switchClose=(gameData[0]==fieldSide);
+			scaleClose=(gameData[1]==fieldSide);
+			if(scaleClose&&switchClose) 
+			{
+				//if both are close
+				if(box.getRawButton(7)) 
+				{
+				//scale	
+					hitScale();
+					
+				}
+				if(box.getRawButton(8)) 
+				{
+					hitSwitchClose();
+				//switch
+				}
+				if(box.getRawButton(9)) 
+				{
+				//both switch and scale
+				}
+			}else if(scaleClose&&!switchClose) 
+>>>>>>> parent of 1c3930b... more!!!
 			{
 				//both switch and scale(DO NOT USE NOT ENOUGH TIME DEFERS to just switch)
 			}
@@ -195,7 +277,10 @@ public class Robot extends IterativeRobot {
 			//both switch and scale(TEST, there may be enough time)
 			}
 		}
+<<<<<<< HEAD
 		
+=======
+>>>>>>> parent of 1c3930b... more!!!
 	}
 
 	/**
@@ -211,9 +296,28 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+<<<<<<< HEAD
 
 
 		d.tankDrive(xbox, box);
+=======
+		//d.XBoxDrive(xboxDrive, 1.0);
+		a.takeIn(xbox.getRawAxis(2)-xbox.getRawAxis(3));
+		
+		if(First.lifted&&xbox.getRawButton(Const.buttonA))liftPos=1;
+		if(!First.lifted&&xbox.getRawButton(Const.buttonA))liftPos=2;
+		if(liftPos==1)First.liftDown();
+		if(liftPos==2)First.liftUp();
+		if(c.in&&xbox.getRawButton(Const.buttonB))carriagePos=1;
+		if(!c.in&&xbox.getRawButton(Const.buttonB))carriagePos=2;
+		if(carriagePos==1)c.Out();
+		if(carriagePos==2)c.In();
+		if(a.grab&&xbox.getRawButton(Const.buttonX))armPos=1;
+		if(!a.grab&&xbox.getRawButton(Const.buttonX))armPos=2;
+		if(armPos==1)a.release();
+		if(armPos==2)a.grab();
+		Second.lift(xbox.getRawAxis(1));
+>>>>>>> parent of 1c3930b... more!!!
 	}
 
 	@Override
@@ -369,14 +473,22 @@ public class Robot extends IterativeRobot {
 	}
 	public void hitScale() {
 		if(gameData[1]=='L') {
+<<<<<<< HEAD
 			step.add(new pathFollower(ConstPaths.longScale, ConstPaths.shortScale, ConstPaths.shortScale.length-1));
+=======
+			step.add(new pathFollower(ConstPaths.longScale, ConstPaths.shortScale, ConstPaths.longScale.length-1));
+>>>>>>> parent of 1c3930b... more!!!
 			step2.add(new lift(3));
 			step.add(new extendCarriage(1));
 			step2.add(new armIntake(.5,3));
 			step.add(null);
 			step2.add(null);
 		}else {
+<<<<<<< HEAD
 			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale, ConstPaths.shortScale.length-1));
+=======
+			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale, ConstPaths.longScale.length-1));
+>>>>>>> parent of 1c3930b... more!!!
 			step2.add(new lift(3));
 			step.add(new extendCarriage(1));
 			step2.add(new armIntake(.5,3));
@@ -386,12 +498,57 @@ public class Robot extends IterativeRobot {
 	}
 	public void hitSwitch() {
 		if(gameData[1]=='L') {
+<<<<<<< HEAD
+			step.add(new pathFollower(ConstPaths.longSwitch, ConstPaths.shortSwitch, ConstPaths.shortSwitch.length-1));
+=======
+			step.add(new pathFollower(ConstPaths.longLongScale, ConstPaths.shortLongScale, ConstPaths.longLongScale.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+		}else {
+			step.add(new pathFollower(ConstPaths.shortLongScale, ConstPaths.longLongScale, ConstPaths.longLongScale.length-1));
+>>>>>>> parent of 1c3930b... more!!!
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+<<<<<<< HEAD
+=======
+		}
+		
+	}
+	public void hitSwitchClose() {
+		
+		if(gameData[0]=='L') {
 			step.add(new pathFollower(ConstPaths.longSwitch, ConstPaths.shortSwitch, ConstPaths.shortSwitch.length-1));
 			step2.add(new lift(3));
 			step.add(new extendCarriage(1));
 			step2.add(new armIntake(.5,3));
 			step.add(null);
 			step2.add(null);
+		}else if(fieldSide=='M'){
+			if(gameData[0]=='L') 
+			{
+				step.add(new pathFollower(ConstPaths.longMidswitch, ConstPaths.shortMidswitch, ConstPaths.shortMidswitch.length-1));
+				step2.add(new lift(3));
+				step.add(new extendCarriage(1));
+				step2.add(new armIntake(.5,3));
+				step.add(null);
+				step2.add(null);
+			}
+			if(gameData[0]=='R') 
+			{
+				step.add(new pathFollower(ConstPaths.shortMidswitch, ConstPaths.longMidswitch, ConstPaths.longMidswitch.length-1));
+				step2.add(new lift(3));
+				step.add(new extendCarriage(1));
+				step2.add(new armIntake(.5,3));
+				step.add(null);
+				step2.add(null);
+			}
+>>>>>>> parent of 1c3930b... more!!!
 		}else {
 			step.add(new pathFollower(ConstPaths.shortSwitch, ConstPaths.longSwitch, ConstPaths.shortSwitch.length-1));
 			step2.add(new lift(3));
@@ -400,6 +557,33 @@ public class Robot extends IterativeRobot {
 			step.add(null);
 			step2.add(null);
 		}
+<<<<<<< HEAD
+=======
+		}
+	public void hitSwitchFar() {
+		if(gameData[0]=='L') {
+			step.add(new pathFollower(ConstPaths.LongSwitchLeft, ConstPaths.LongSwitchRight, ConstPaths.LongSwitchRight.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+			
+		}else if(gameData[0]=='R') {
+			step.add(new pathFollower(ConstPaths.LongSwitchRight, ConstPaths.LongSwitchLeft, ConstPaths.LongSwitchRight.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+			
+			
+		}
+		
+		
+		
+	}
+>>>>>>> parent of 1c3930b... more!!!
 		
 	}
 	
