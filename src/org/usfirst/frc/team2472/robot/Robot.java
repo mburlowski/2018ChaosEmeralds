@@ -171,6 +171,7 @@ public class Robot extends IterativeRobot {
 			if(box.getRawButton(8)) 
 			{
 			//switch
+				hitLongSwitch();
 			}
 			if(box.getRawButton(9)) 
 			{
@@ -181,7 +182,7 @@ public class Robot extends IterativeRobot {
 			if(box.getRawButton(7)) 
 			{
 			//scale	
-				
+				hitLongScale();
 			}
 			if(box.getRawButton(8)) 
 			{
@@ -202,6 +203,7 @@ public class Robot extends IterativeRobot {
 			if(box.getRawButton(8)) 
 			{
 			//switch
+				hitLongSwitch();
 			}
 			if(box.getRawButton(9)) 
 =======
@@ -267,10 +269,12 @@ public class Robot extends IterativeRobot {
 			if(box.getRawButton(7)) 
 			{
 			//scale	
+				hitLongScale();
 			}
 			if(box.getRawButton(8)) 
 			{
 			//switch
+				hitLongSwitch();
 			}
 			if(box.getRawButton(9)) 
 			{
@@ -489,6 +493,43 @@ public class Robot extends IterativeRobot {
 =======
 			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale, ConstPaths.longScale.length-1));
 >>>>>>> parent of 1c3930b... more!!!
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+		}
+	
+	}
+	public void hitLongScale() 
+	{
+		if(gameData[1]=='L') {
+			step.add(new pathFollower(ConstPaths.FARlongSwitch, ConstPaths.FARshortSwitch, ConstPaths.shortSwitch.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+		}else {
+			step.add(new pathFollower(ConstPaths.FARshortSwitch, ConstPaths.FARlongSwitch, ConstPaths.shortSwitch.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+		}
+	}
+	public void hitLongSwitch() 
+	{
+		if(gameData[1]=='L') {
+			step.add(new pathFollower(ConstPaths.FARlongSwitch, ConstPaths.FARshortSwitch, ConstPaths.FARshortSwitch.length-1));
+			step2.add(new lift(3));
+			step.add(new extendCarriage(1));
+			step2.add(new armIntake(.5,3));
+			step.add(null);
+			step2.add(null);
+		}else {
+			step.add(new pathFollower(ConstPaths.FARshortSwitch, ConstPaths.FARlongSwitch, ConstPaths.FARshortSwitch.length-1));
 			step2.add(new lift(3));
 			step.add(new extendCarriage(1));
 			step2.add(new armIntake(.5,3));
