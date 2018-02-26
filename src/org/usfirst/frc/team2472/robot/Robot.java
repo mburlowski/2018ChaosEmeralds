@@ -45,13 +45,10 @@ import subsystem.drive;
  * project.
  */
 public class Robot extends IterativeRobot {
-<<<<<<< HEAD
-=======
 	int armPos=0;
 	int liftPos=0;
 	int carriagePos=0;
 //	UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture();
->>>>>>> parent of 1c3930b... more!!!
 	boolean scaleClose,switchClose;
 	Compressor compress=new Compressor(0);
 	//public static AnalogInput distSense = new AnalogInput(Const.dSense);
@@ -76,13 +73,9 @@ public class Robot extends IterativeRobot {
 	ArrayList<Action> step = new ArrayList<Action>();
 	ArrayList<Action> step2 = new ArrayList<Action>();
 	int nAction = 0;
-<<<<<<< HEAD
-=======
 	
 	//NetworkTableInstance offSeasonNetworkTable;
 	String gameDataInit;
->>>>>>> parent of 1c3930b... more!!!
-
 	char[] gameData;
 	boolean[] automode; // left = false, right = true
 	int testmode = 0;
@@ -94,23 +87,16 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-<<<<<<< HEAD
-=======
 //		cam0.setFPS(20);
 //		cam0.setResolution(640, 480);
->>>>>>> parent of 1c3930b... more!!!
 		compress.setClosedLoopControl(true);
 		imu.zeroYaw();
 		// smartdashboard shtuff
-<<<<<<< HEAD
-		SmartDashboard.putNumber("A. Number", .1);
-=======
 	//	SmartDashboard.putNumber("A. Number", .1);
 		
 		//offSeasonNetworkTable = NetworkTableInstance.create();
 		//offSeasonNetworkTable.startClient("10.0.100.5");
 	//	gameDataInit = offSeasonNetworkTable.getTable("OffseasonFMSInfo").getEntry("GameData").getString("defaultValue");
->>>>>>> parent of 1c3930b... more!!!
 	}
 
 	/**
@@ -130,81 +116,6 @@ public class Robot extends IterativeRobot {
 		if(box.getRawButton(4))fieldSide='L';
 		if(box.getRawButton(5))fieldSide='M';
 		if(box.getRawButton(6))fieldSide='R';
-<<<<<<< HEAD
-		gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
-		//2 chances to get the data in AUTOinit
-		if(gameData.length>0) {
-			
-			
-		}else 
-		{
-			gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
-			
-		}
-		switchClose=(gameData[0]==fieldSide);
-		scaleClose=(gameData[1]==fieldSide);
-		if(scaleClose&&switchClose) 
-		{
-			//if both are close
-			if(box.getRawButton(7)) 
-			{
-			//scale	
-				hitScale();
-				
-			}
-			if(box.getRawButton(8)) 
-			{
-				hitSwitch();
-			//switch
-			}
-			if(box.getRawButton(9)) 
-			{
-			//both switch and scale
-			}
-		}else if(scaleClose&&!switchClose) 
-		{
-			if(box.getRawButton(7)) 
-			{
-			//scale	
-				hitScale();
-			}
-			if(box.getRawButton(8)) 
-			{
-			//switch
-			}
-			if(box.getRawButton(9)) 
-			{
-			//both switch and scale(DO NOT USE NOT ENOUGH TIME DEFERS to just switch)
-			}
-		}else if(!scaleClose&&switchClose) 
-		{
-			if(box.getRawButton(7)) 
-			{
-			//scale	
-				
-			}
-			if(box.getRawButton(8)) 
-			{
-				hitSwitch();
-			//switch
-			}
-			if(box.getRawButton(9)) 
-			{
-				//both switch and scale(DO NOT USE NOT ENOUGH TIME DEFERS to just switch)
-			}
-		}else if(scaleClose&&!switchClose) 
-		{
-			if(box.getRawButton(7)) 
-			{
-			//scale	
-				hitScale();
-			}
-			if(box.getRawButton(8)) 
-			{
-			//switch
-			}
-			if(box.getRawButton(9)) 
-=======
 		//gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
 		//For off season
 		//gameData = gameDataInit.toCharArray();
@@ -258,7 +169,6 @@ public class Robot extends IterativeRobot {
 				//both switch and scale
 				}
 			}else if(scaleClose&&!switchClose) 
->>>>>>> parent of 1c3930b... more!!!
 			{
 				//both switch and scale(DO NOT USE NOT ENOUGH TIME DEFERS to just switch)
 			}
@@ -277,10 +187,6 @@ public class Robot extends IterativeRobot {
 			//both switch and scale(TEST, there may be enough time)
 			}
 		}
-<<<<<<< HEAD
-		
-=======
->>>>>>> parent of 1c3930b... more!!!
 	}
 
 	/**
@@ -296,11 +202,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-<<<<<<< HEAD
-
-
-		d.tankDrive(xbox, box);
-=======
 		//d.XBoxDrive(xboxDrive, 1.0);
 		a.takeIn(xbox.getRawAxis(2)-xbox.getRawAxis(3));
 		
@@ -317,7 +218,6 @@ public class Robot extends IterativeRobot {
 		if(armPos==1)a.release();
 		if(armPos==2)a.grab();
 		Second.lift(xbox.getRawAxis(1));
->>>>>>> parent of 1c3930b... more!!!
 	}
 
 	@Override
@@ -473,22 +373,14 @@ public class Robot extends IterativeRobot {
 	}
 	public void hitScale() {
 		if(gameData[1]=='L') {
-<<<<<<< HEAD
-			step.add(new pathFollower(ConstPaths.longScale, ConstPaths.shortScale, ConstPaths.shortScale.length-1));
-=======
 			step.add(new pathFollower(ConstPaths.longScale, ConstPaths.shortScale, ConstPaths.longScale.length-1));
->>>>>>> parent of 1c3930b... more!!!
 			step2.add(new lift(3));
 			step.add(new extendCarriage(1));
 			step2.add(new armIntake(.5,3));
 			step.add(null);
 			step2.add(null);
 		}else {
-<<<<<<< HEAD
-			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale, ConstPaths.shortScale.length-1));
-=======
 			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale, ConstPaths.longScale.length-1));
->>>>>>> parent of 1c3930b... more!!!
 			step2.add(new lift(3));
 			step.add(new extendCarriage(1));
 			step2.add(new armIntake(.5,3));
