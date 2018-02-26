@@ -498,71 +498,7 @@ public class Robot extends IterativeRobot {
 	}
 	public void hitSwitch() {
 		if(gameData[1]=='L') {
-<<<<<<< HEAD
 			step.add(new pathFollower(ConstPaths.longSwitch, ConstPaths.shortSwitch, ConstPaths.shortSwitch.length-1));
-=======
-			step.add(new pathFollower(ConstPaths.longLongScale, ConstPaths.shortLongScale, ConstPaths.longLongScale.length-1));
-			step2.add(new lift(3));
-			step.add(new extendCarriage(1));
-			step2.add(new armIntake(.5,3));
-			step.add(null);
-			step2.add(null);
-		}else {
-			step.add(new pathFollower(ConstPaths.shortLongScale, ConstPaths.longLongScale, ConstPaths.longLongScale.length-1));
->>>>>>> parent of 1c3930b... more!!!
-			step2.add(new lift(3));
-			step.add(new extendCarriage(1));
-			step2.add(new armIntake(.5,3));
-			step.add(null);
-			step2.add(null);
-<<<<<<< HEAD
-=======
-		}
-		
-	}
-	public void hitSwitchClose() {
-		
-		if(gameData[0]=='L') {
-			step.add(new pathFollower(ConstPaths.longSwitch, ConstPaths.shortSwitch, ConstPaths.shortSwitch.length-1));
-			step2.add(new lift(3));
-			step.add(new extendCarriage(1));
-			step2.add(new armIntake(.5,3));
-			step.add(null);
-			step2.add(null);
-		}else if(fieldSide=='M'){
-			if(gameData[0]=='L') 
-			{
-				step.add(new pathFollower(ConstPaths.longMidswitch, ConstPaths.shortMidswitch, ConstPaths.shortMidswitch.length-1));
-				step2.add(new lift(3));
-				step.add(new extendCarriage(1));
-				step2.add(new armIntake(.5,3));
-				step.add(null);
-				step2.add(null);
-			}
-			if(gameData[0]=='R') 
-			{
-				step.add(new pathFollower(ConstPaths.shortMidswitch, ConstPaths.longMidswitch, ConstPaths.longMidswitch.length-1));
-				step2.add(new lift(3));
-				step.add(new extendCarriage(1));
-				step2.add(new armIntake(.5,3));
-				step.add(null);
-				step2.add(null);
-			}
->>>>>>> parent of 1c3930b... more!!!
-		}else {
-			step.add(new pathFollower(ConstPaths.shortSwitch, ConstPaths.longSwitch, ConstPaths.shortSwitch.length-1));
-			step2.add(new lift(3));
-			step.add(new extendCarriage(1));
-			step2.add(new armIntake(.5,3));
-			step.add(null);
-			step2.add(null);
-		}
-<<<<<<< HEAD
-=======
-		}
-	public void hitSwitchFar() {
-		if(gameData[0]=='L') {
-			step.add(new pathFollower(ConstPaths.LongSwitchLeft, ConstPaths.LongSwitchRight, ConstPaths.LongSwitchRight.length-1));
 			step2.add(new lift(3));
 			step.add(new extendCarriage(1));
 			step2.add(new armIntake(.5,3));
@@ -583,7 +519,6 @@ public class Robot extends IterativeRobot {
 		
 		
 	}
->>>>>>> parent of 1c3930b... more!!!
 		
 	}
 	
