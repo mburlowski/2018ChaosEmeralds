@@ -23,10 +23,6 @@ public class arms extends Action {
 
 	/** Closes arms */
 	public void grab() {
-<<<<<<< HEAD
-=======
-		grab=true;
->>>>>>> parent of 1c3930b... more!!!
 		pistonArm.set(DoubleSolenoid.Value.kForward);
 	}
 	/**Closes one side; true=right*/
@@ -34,10 +30,6 @@ public class arms extends Action {
 	
 	/** Opens arms */
 	public void release() {
-<<<<<<< HEAD
-=======
-		grab=false;
->>>>>>> parent of 1c3930b... more!!!
 		pistonArm.set(DoubleSolenoid.Value.kReverse);
 	}
 	
