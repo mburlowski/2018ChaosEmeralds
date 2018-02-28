@@ -140,7 +140,7 @@ public class Robot extends IterativeRobot {
 			case('R'):
 				break;
 			
-		}*/
+		}*/ {
 			if(gameData.length==0) {
 				
 			}else 
@@ -168,11 +168,7 @@ public class Robot extends IterativeRobot {
 				{
 				//both switch and scale
 				}
-			}else if(scaleClose&&!switchClose) 
-			{
-				//both switch and scale(DO NOT USE NOT ENOUGH TIME DEFERS to just switch)
-			}
-		}else if(!scaleClose&&!switchClose) 
+			}else if(!scaleClose&&!switchClose) 
 		{
 			if(box.getRawButton(7)) 
 			{
@@ -187,7 +183,9 @@ public class Robot extends IterativeRobot {
 			//both switch and scale(TEST, there may be enough time)
 			}
 		}
+}
 	}
+	
 
 	/**
 	 * This function is called periodically during autonomous.
@@ -410,8 +408,13 @@ public class Robot extends IterativeRobot {
 		
 		
 		
+		
+	}
+	private void hitSwitchClose() {
+		// TODO Auto-generated method stub
+		
 	}
 		
 	}
 	
-}
+

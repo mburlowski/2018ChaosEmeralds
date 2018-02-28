@@ -1,12 +1,14 @@
 package constants;
 
 public class ConstPaths {
-public static double[] longSwitch= {};
-public static double[] shortSwitch= {};
-public static double[] longScale= {};
-public static double[] shortScale= {};
-public static double[] FARshortScale= {};
-public static double[] FARlongScale= {};
-public static double[] FARshortSwitch= {};
-public static double[] FARlongSwitch= {};
+public static final double[] LongSwitchRight = {};
+public static final double[] LongSwitchLeft = {};
+public static final double[] longSwitch= {};
+public static final double[] shortSwitch= {};
+public static final double[] longScale= {};
+public static final double[] shortScale= {};
+public static final double[] FARshortScale= {};
+public static final double[] FARlongScale= {};
+public static final double[] FARshortSwitch= {};
+public static final double[] FARlongSwitch= {};
 }
