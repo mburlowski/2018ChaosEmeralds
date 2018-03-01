@@ -131,7 +131,7 @@ public class Robot extends IterativeRobot {
 				}
 				break;
 			case('M'):
-				
+				// TODO write code for middle to switch
 				step.add(new lift(3));
 				step2.add(new extendCarriage(1));
 				step.add(new armIntake(.5,3));
