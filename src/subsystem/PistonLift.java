@@ -3,7 +3,7 @@ package subsystem;
 import constants.Const;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
-public class FirstLift {
+public class PistonLift {
 	public boolean lifted=false;
 	DoubleSolenoid lift=new DoubleSolenoid(Const.firstLiftdown,Const.firstLiftUP);
 	

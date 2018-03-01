@@ -30,8 +30,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import objects.Action;
-import subsystem.FirstLift;
-import subsystem.SecondLift;
+import subsystem.PistonLift;
+import subsystem.BeltLift;
 import subsystem.arms;
 import subsystem.carriage;
 import subsystem.climber;
@@ -49,7 +49,7 @@ public class Robot extends IterativeRobot {
 	int liftPos=0;
 	int carriagePos=0;
 //	UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture();
-	boolean scaleClose,switchClose;
+	boolean switchClose;
 	Compressor compress=new Compressor(0);
 	//public static AnalogInput distSense = new AnalogInput(Const.dSense);
 	//public static NetworkTableEntry entry;
@@ -58,8 +58,8 @@ public class Robot extends IterativeRobot {
 	char fieldSide='q';
 	public static arms a = new arms();
 	public static carriage c =new carriage();
-	public static FirstLift First=new FirstLift();
-	public static SecondLift Second=new SecondLift();
+	public static PistonLift Piston=new PistonLift();
+	public static BeltLift Belt=new BeltLift();
 	public static climber climb=new climber();
 	
 
@@ -113,77 +113,41 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		if(box.getRawButton(4))fieldSide='L';
-		if(box.getRawButton(5))fieldSide='M';
+		
+		if(box.getRawButton(8))fieldSide='L';
+		if(box.getRawButton(7))fieldSide='M';
 		if(box.getRawButton(6))fieldSide='R';
-		//gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
-		//For off season
-		//gameData = gameDataInit.toCharArray();
-
-		//2 chances to get the data in AUTOinit
-		/*switch(fieldSide) {
+		
+		while(gameData.length==0){
+		gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
+		}
+		switchClose=(fieldSide==gameData[0]);
+		switch(fieldSide) {
 			case('L'):
-				if(gameData[0]=='L') 
-				{	
-					// TODO left side to left Switch
+				if(switchClose) {
+					hitSwitch();
+				}else{
+					hitSwitchLong();
 				}
-				else 
-				{
-					// TODO leftside to right Switch
-				}
-					
-					
 				break;
 			case('M'):
-				if(gameData[0])
+				
+				step.add(new lift(3));
+				step2.add(new extendCarriage(1));
+				step.add(new armIntake(.5,3));
+				step.add(new Action());
+				step.add(null);
+				step2.add(null);
 				break;
 			case('R'):
+				if(switchClose) {
+					hitSwitch();
+				}else{
+					hitSwitchLong();
+				}
 				break;
 			
-		}*/ {
-			if(gameData.length==0) {
-				
-			}else 
-			{
-			//gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
-				
-			}
-			switchClose=(gameData[0]==fieldSide);
-			scaleClose=(gameData[1]==fieldSide);
-			if(scaleClose&&switchClose) 
-			{
-				//if both are close
-				if(box.getRawButton(7)) 
-				{
-				//scale	
-					hitScale();
-					
-				}
-				if(box.getRawButton(8)) 
-				{
-					hitSwitchClose();
-				//switch
-				}
-				if(box.getRawButton(9)) 
-				{
-				//both switch and scale
-				}
-			}else if(!scaleClose&&!switchClose) 
-		{
-			if(box.getRawButton(7)) 
-			{
-			//scale	
-			}
-			if(box.getRawButton(8)) 
-			{
-			//switch
-			}
-			if(box.getRawButton(9)) 
-			{
-			//both switch and scale(TEST, there may be enough time)
-			}
-		}
-}
+		} 
 	}
 	
 
@@ -203,10 +167,10 @@ public class Robot extends IterativeRobot {
 		//d.XBoxDrive(xboxDrive, 1.0);
 		a.takeIn(xbox.getRawAxis(2)-xbox.getRawAxis(3));
 		
-		if(First.lifted&&xbox.getRawButton(Const.buttonA))liftPos=1;
-		if(!First.lifted&&xbox.getRawButton(Const.buttonA))liftPos=2;
-		if(liftPos==1)First.liftDown();
-		if(liftPos==2)First.liftUp();
+		if(Piston.lifted&&xbox.getRawButton(Const.buttonA))liftPos=1;
+		if(!Piston.lifted&&xbox.getRawButton(Const.buttonA))liftPos=2;
+		if(liftPos==1)Piston.liftDown();
+		if(liftPos==2)Piston.liftUp();
 		if(c.in&&xbox.getRawButton(Const.buttonB))carriagePos=1;
 		if(!c.in&&xbox.getRawButton(Const.buttonB))carriagePos=2;
 		if(carriagePos==1)c.Out();
@@ -215,7 +179,7 @@ public class Robot extends IterativeRobot {
 		if(!a.grab&&xbox.getRawButton(Const.buttonX))armPos=2;
 		if(armPos==1)a.release();
 		if(armPos==2)a.grab();
-		Second.lift(xbox.getRawAxis(1));
+		Belt.lift(xbox.getRawAxis(1));
 	}
 
 	@Override
@@ -388,7 +352,7 @@ public class Robot extends IterativeRobot {
 	}
 	public void hitSwitch() {
 		if(gameData[1]=='L') {
-			step.add(new pathFollower(ConstPaths.longSwitch, ConstPaths.shortSwitch, ConstPaths.shortSwitch.length-1));
+			step.add(new pathFollower(ConstPaths.Outside_Short_Switch, ConstPaths.Inside_Short_Switch, ConstPaths.Inside_Short_Switch.length-1));
 			step2.add(new lift(3));
 			step.add(new extendCarriage(1));
 			step2.add(new armIntake(.5,3));
@@ -396,7 +360,7 @@ public class Robot extends IterativeRobot {
 			step2.add(null);
 			
 		}else if(gameData[0]=='R') {
-			step.add(new pathFollower(ConstPaths.LongSwitchRight, ConstPaths.LongSwitchLeft, ConstPaths.LongSwitchRight.length-1));
+			step.add(new pathFollower(ConstPaths.Inside_Short_Switch, ConstPaths.Outside_Short_Switch, ConstPaths.Inside_Short_Switch.length-1));
 			step2.add(new lift(3));
 			step.add(new extendCarriage(1));
 			step2.add(new armIntake(.5,3));
@@ -405,6 +369,26 @@ public class Robot extends IterativeRobot {
 			
 			
 		}
+	}
+		public void hitSwitchLong() {
+			if(gameData[1]=='L') {
+				step.add(new pathFollower(ConstPaths.Outside_long_Switch, ConstPaths.Inside_Long_Switch, ConstPaths.Inside_Long_Switch.length-1));
+				step2.add(new lift(3));
+				step.add(new extendCarriage(1));
+				step2.add(new armIntake(.5,3));
+				step.add(null);
+				step2.add(null);
+				
+			}else if(gameData[0]=='R') {
+				step.add(new pathFollower(ConstPaths.Inside_Long_Switch, ConstPaths.Outside_long_Switch, ConstPaths.Inside_Long_Switch.length-1));
+				step2.add(new lift(3));
+				step.add(new extendCarriage(1));
+				step2.add(new armIntake(.5,3));
+				step.add(null);
+				step2.add(null);
+				
+				
+			}
 		
 		
 		

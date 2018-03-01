@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import constants.Const;
-public class SecondLift {
+public class BeltLift {
 	TalonSRX liftMotor=new TalonSRX(Const.lift);
 
 public void lift(double speed) 
