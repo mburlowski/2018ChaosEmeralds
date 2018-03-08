@@ -2,8 +2,6 @@ package autoActions;
 
 import org.usfirst.frc.team2472.robot.Robot;
 
-import objects.Action;
-
 public class UseIntake extends Action {
 	double armSpeed;
 	int timeout;
@@ -20,7 +18,7 @@ public class UseIntake extends Action {
 		super.startAction();
 	}
 	public void periodic() {
-		Robot.a.takeIn(armSpeed);
+		Robot.a.armSpeed(armSpeed);
 	}
 	public void endAction() {
 		

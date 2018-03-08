@@ -1,4 +1,4 @@
-package objects;
+package autoActions;
 
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

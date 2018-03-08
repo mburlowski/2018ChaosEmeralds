@@ -5,7 +5,6 @@ import org.usfirst.frc.team2472.robot.Robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import objects.Action;
 
 public class CameraCube extends Action {
 	double x,right,left;
@@ -18,7 +17,7 @@ public class CameraCube extends Action {
 	}
 	public void periodic() {
 		Robot.a.release();
-		Robot.a.takeIn(.25);
+		Robot.a.armSpeed(.25);
 		
 	//	x=Robot.entry.getDouble(0.0);
 		double Const = 100.0;
@@ -32,7 +31,7 @@ public class CameraCube extends Action {
 			double xoffset = Math.abs(x-320)/p;
 			System.out.print(" xoffset: "+(1-xoffset)+" ");
 
-			Robot.d.turn(speed, (1-xoffset)*speed);
+			Robot.d.setSide(speed, (1-xoffset)*speed);
 			
 			
 		}else if(x<320.0&&x!=0.0)
@@ -40,7 +39,7 @@ public class CameraCube extends Action {
 			double xoffset = Math.abs(x-320)/p;
 			System.out.print(" xoffset: "+xoffset+" ");
 			
-			Robot.d.turn((1-xoffset)*speed, speed);
+			Robot.d.setSide((1-xoffset)*speed, speed);
 			
 			
 			
@@ -48,7 +47,7 @@ public class CameraCube extends Action {
 		}else if(1==1) {
 			Robot.a.grab();
 			Robot.d.stopMotors();
-			Robot.a.takeIn(0);
+			Robot.a.armSpeed(0);
 	}
 		
 	}

@@ -8,35 +8,24 @@
 package org.usfirst.frc.team2472.robot;
 
 import java.util.ArrayList;
-
-import com.kauailabs.nav6.frc.IMUAdvanced;
-
 import autoActions.UseIntake;
+import autoActions.Action;
 import autoActions.UseBelt;
 import autoActions.UseCarriage;
 import autoActions.pathFollower;
-import autoActions.simpleForward;
 import constants.Const;
 import constants.ConstPaths;
 import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import objects.Action;
 import subsystem.PistonLift;
 import subsystem.BeltLift;
 import subsystem.arms;
 import subsystem.carriage;
-import subsystem.climber;
 import subsystem.drive;
 
 /**
@@ -59,8 +48,6 @@ public class Robot extends IterativeRobot {
 	Compressor compress = new Compressor(0);
 	int AutoSpeedL=200;
 	int AutoSpeedR=200;
-	// public static AnalogInput distSense = new AnalogInput(Const.dSense);
-	// public static NetworkTableEntry entry;
 	Joystick L = new Joystick(4);
 	boolean lastChange = false;
 	Joystick R = new Joystick(5);
@@ -71,10 +58,6 @@ public class Robot extends IterativeRobot {
 	public static carriage c = new carriage();
 	public static PistonLift Piston = new PistonLift();
 	public static BeltLift Belt = new BeltLift();
-	public static climber climb = new climber();
-
-	Joystick joyL = new Joystick(Const.jstickL);
-	Joystick joyR = new Joystick(Const.jstickR);
 	XboxController xboxDrive = new XboxController(Const.xbox);
 	Joystick box = new Joystick(Const.box);
 
@@ -101,31 +84,10 @@ public class Robot extends IterativeRobot {
 		cam0.setResolution(160, 120);
 		cam0.setWhiteBalanceAuto();
 		cam0.setExposureAuto();
-
 		compress.setClosedLoopControl(true);
-		// imu.zeroYaw();
-		// smartdashboard shtuff
-		// SmartDashboard.putNumber("A. Number", .1);
-
-		// offSeasonNetworkTable = NetworkTableInstance.create();
-		// offSeasonNetworkTable.startClient("10.0.100.5");
-		// gameDataInit =
-		// offSeasonNetworkTable.getTable("OffseasonFMSInfo").getEntry("GameData").getString("defaultValue");
 	}
 
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable chooser
-	 * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
-	 * remove all of the chooser code and uncomment the getString line to get the
-	 * auto name from the text box below the Gyro
-	 *
-	 * <p>
-	 * You can add additional auto modes by adding additional comparisons to the
-	 * switch structure below with additional strings. If using the SendableChooser
-	 * make sure to add them to the chooser code above as well.
-	 */
-	@Override
+	
 	public void autonomousInit() {
 		gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
 		time = System.currentTimeMillis();
@@ -243,7 +205,7 @@ public class Robot extends IterativeRobot {
 		  if(time+3570<System.currentTimeMillis()&&time+3570+3000>System.
 		  currentTimeMillis()&&switchClose) { Belt.lift(-1.0);
 		  }if(time+3570+3000<System.currentTimeMillis()&&switchClose) { Belt.lift(0.0);
-		  a.takeIn(-.5); }
+		  a.armSpeed(-.5); }
 		 
 	}
 
@@ -285,7 +247,7 @@ public class Robot extends IterativeRobot {
 		d.XBoxDrive(xboxDrive, .7);
 
 		// Arm intake
-		a.takeIn(xbox.getRawAxis(1));
+		a.armSpeed(xbox.getRawAxis(1));
 
 		// Piston Toggle on A
 		// if(Piston.lifted&&xbox.getRawButton(Const.buttonA))liftPos=1;
@@ -314,7 +276,7 @@ public class Robot extends IterativeRobot {
 
 			armPos = 1;
 			System.out.println("arms");
-			a.takeIn(.4);
+			a.armSpeed(.4);
 
 		}
 
@@ -350,7 +312,6 @@ public class Robot extends IterativeRobot {
 
 	public void testPeriodic() {
 		// DPad left and right switch test modes
-		d.slaveTest(.25);
 		/*
 		 * if(xbox.getRawButton(Const.buttonA))d.runBL(.25); else d.runBL(0);
 		 * if(xbox.getRawButton(Const.buttonB))d.runFL(.25); else d.runFL(0);

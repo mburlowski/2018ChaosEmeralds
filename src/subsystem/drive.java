@@ -3,18 +3,18 @@ package subsystem;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import actions.isGonnaCrashAh;
+
+import autoActions.Action;
 import constants.Const;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import objects.Action;
+
 
 public class drive extends Action {
 	public TalonSRX bL, fL, bR, fR;
 	double leftSide,rightSide;
-	isGonnaCrashAh gonnaCrashL, gonnaCrashR;
+	
 	AnalogInput distSensL, distSensR;
 
 	public drive() {
@@ -114,17 +114,7 @@ public class drive extends Action {
 	/**
 	 * [WIP] Moves the robot based on a quadratic function of joystick movement
 	 */
-	@Deprecated
-	public void tankDriveCurved(Joystick ljoy, Joystick rjoy) {// WIP
-		// halves speed if near wall / isGonnaCrash
-		// sets speed to the joystick function input times .5 if near wall, else times 1
-		if (Math.abs(ljoy.getY()) > Const.ledzone)
-			bL.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
-		fL.set(ControlMode.PercentOutput, -ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
-		bR.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
-		fR.set(ControlMode.PercentOutput, -rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
-	}
-
+	
 	/** Moves all motors at same power */
 	public void setAllMotors(double spped) {
 
@@ -147,14 +137,6 @@ public class drive extends Action {
 	 * Causes the robot to spin by running both sides of the drive train in
 	 * opposition
 	 */
-	public void spin() {
-
-		bL.set(ControlMode.PercentOutput, -1.0);
-		fL.set(ControlMode.PercentOutput, -1.0);
-		bR.set(ControlMode.PercentOutput, 1.0);
-		fR.set(ControlMode.PercentOutput, 1.0);
-	}
-
 	/** Runs front right motor at full power */
 	public void runFR(double spped) {
 		fR.set(ControlMode.PercentOutput, spped);
@@ -179,9 +161,5 @@ public class drive extends Action {
 		bR.set(ControlMode.Velocity,left);
 		fL.set(ControlMode.Velocity,right);
 		
-	}
-	public void slaveTest (double speed) {
-		fL.set(ControlMode.PercentOutput, speed);
-		bR.set(ControlMode.PercentOutput, speed);
 	}
 }

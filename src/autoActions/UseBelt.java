@@ -2,7 +2,6 @@ package autoActions;
 
 import org.usfirst.frc.team2472.robot.Robot;
 
-import objects.Action;
 import subsystem.BeltLift;
 
 public class UseBelt extends Action {

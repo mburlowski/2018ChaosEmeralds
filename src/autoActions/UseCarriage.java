@@ -2,8 +2,6 @@ package autoActions;
 
 import org.usfirst.frc.team2472.robot.Robot;
 
-import objects.Action;
-
 public class UseCarriage extends Action {
 	boolean in;
 	/**
