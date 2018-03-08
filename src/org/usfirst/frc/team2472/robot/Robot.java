@@ -99,11 +99,9 @@ public class Robot extends IterativeRobot {
 			fieldSide = 'R';
 		switchClose = (fieldSide == gameData[0]);
 		int mode = 0;
-/*
-		if (box.getRawButton(1)) {
-			fieldSide = 'S';
-		}
-		System.out.println("Got String: " + gameData[0]);
+
+		
+	
 		if (fieldSide == 'M') {
 			// TODO write code for middle to switcho
 			midSwitch();
@@ -118,34 +116,7 @@ public class Robot extends IterativeRobot {
 
 		}
 
-		if (fieldSide == 'q') {
-
-			step.add(null);
-			step2.add(null);
-		}
-		if (fieldSide == 'S') {
-			step.add(new simpleForward(6, 100));
-			step2.add(new Action());
-			step.add(new simpleForward(6, -100));
-			step2.add(new Action());
-			step.add(null);
-			step2.add(null);
-		}
-		System.out.println(step.size() + "    Q    " + step.size());
-		if (step.size() > 0) {
-			currentAction = 0;
-
-			step.get(currentAction).startAction();
-			step2.get(currentAction).startAction();
-		}
-*/
-		// My Stuff
-		// System.out.println("Creating action array");
-		// step.add(new Action());
-		// step2.add(new Action());
-		// step.add(null);
-		// step2.add(null);
-		// System.out.println("Done");
+		
 	}
 
 	/**
@@ -153,48 +124,14 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		/*
-		System.out.println(currentAction);
-		if (step.size() > 0 && step.get(currentAction) != null) {
-
-			if (!step.get(currentAction).isFinished()) {
-
-				step.get(currentAction).periodic();
-
-			}
-
-			if (!step2.get(currentAction).isFinished()) {
-
-				step2.get(currentAction).periodic();
-
-			}
-
-			if (step.get(currentAction).isFinished() && step2.get(currentAction).isFinished()) {
-
-				currentAction++;
-
-				if (step.get(currentAction) != null) {
-
-					step.get(currentAction).startAction();
-
-					step2.get(currentAction).startAction();
-
-				}
-
-			}
-
-		}*/
-		/*
-		 * if(box.getRawButton(5)) { switch(mode) { case 0:
-		 * if(time+3570>System.currentTimeMillis()) {d.speed(200, 200); }else
-		 * {d.speed(0, 0);mode = 1;}
-		 * 
-		 * case 1: time = System.currentTimeMillis(); break; }
-		 * 
-		 * }else {
-		 * 
-		 * }
-		 */
+		for(int i=0;i<step.size();i++) 
+		{
+			step.get(i).compareTime(time);
+			step2.get(i).compareTime(time);
+			if(step.get(i).ActionEnded)step.remove(i);
+			if(step2.get(i).ActionEnded)step2.remove(i);
+		}
+		
 		
 		 // AUTONYMOUS THAT IS CONFIRMED TO WORK 
 		
@@ -419,14 +356,14 @@ public class Robot extends IterativeRobot {
 	public void hitScale() {
 		System.out.println("scale");
 		if (gameData[1] == 'L') {
-			step.add(new pathFollower(ConstPaths.longScale, ConstPaths.shortScale));
+			step.add(new pathFollower(ConstPaths.longScale, ConstPaths.shortScale,0));
 			step2.add(new UseBelt(3, 1.0));
 			step.add(new UseCarriage(3, false));
 			step2.add(new UseIntake(.5, 3));
 			step.add(null);
 			step2.add(null);
 		} else {
-			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale));
+			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale,0));
 			step2.add(new UseBelt(3, 1.0));
 			step.add(new UseCarriage(3, false));
 			step2.add(new UseIntake(.5, 3));
@@ -438,7 +375,7 @@ public class Robot extends IterativeRobot {
 	public void hitSwitch() {
 		System.out.println("switch");
 		if (gameData[1] == 'L') {
-			step.add(new pathFollower(ConstPaths.Outside_Short_Switch, ConstPaths.Inside_Short_Switch));
+			step.add(new pathFollower(ConstPaths.Outside_Short_Switch, ConstPaths.Inside_Short_Switch,0));
 			step2.add(new UseBelt(3, 1.0));
 			step.add(new UseCarriage(1, false));
 			step2.add(new UseIntake(.5, 3));
@@ -446,7 +383,7 @@ public class Robot extends IterativeRobot {
 			step2.add(null);
 
 		} else if (gameData[0] == 'R') {
-			step.add(new pathFollower(ConstPaths.Inside_Short_Switch, ConstPaths.Outside_Short_Switch));
+			step.add(new pathFollower(ConstPaths.Inside_Short_Switch, ConstPaths.Outside_Short_Switch,0));
 			step2.add(new UseBelt(3, 1.0));
 			step.add(new UseCarriage(1, false));
 			step2.add(new UseIntake(.5, 3));
@@ -459,7 +396,7 @@ public class Robot extends IterativeRobot {
 	public void hitSwitchLong() {
 		System.out.println("switchLong");
 		if (gameData[1] == 'L') {
-			step.add(new pathFollower(ConstPaths.Outside_long_Switch, ConstPaths.Inside_Long_Switch));
+			step.add(new pathFollower(ConstPaths.Outside_long_Switch, ConstPaths.Inside_Long_Switch,0));
 			step2.add(new UseBelt(3, 1.0));
 			step.add(new UseCarriage(1, false));
 			step2.add(new UseIntake(.5, 3));
@@ -468,7 +405,7 @@ public class Robot extends IterativeRobot {
 
 		} else if (gameData[0] == 'R') {
 
-			step.add(new pathFollower(ConstPaths.Inside_Long_Switch, ConstPaths.Outside_long_Switch));
+			step.add(new pathFollower(ConstPaths.Inside_Long_Switch, ConstPaths.Outside_long_Switch,0));
 			step2.add(new UseBelt(3, 1.0));
 			step.add(new UseCarriage(1, false));
 			step2.add(new UseIntake(.5, 3));
@@ -482,14 +419,14 @@ public class Robot extends IterativeRobot {
 	public void midSwitch() {
 		System.out.println("midSwitch");
 		if (gameData[0] == 'L') {
-			step.add(new pathFollower(ConstPaths.leftSide_leftPathMid, ConstPaths.leftSide_rightPathMid));
+			step.add(new pathFollower(ConstPaths.leftSide_leftPathMid, ConstPaths.leftSide_rightPathMid,0));
 			step2.add(new UseBelt(3, 1.0));
 			step.add(new UseCarriage(1, false));
 			step2.add(new UseIntake(.5, 3));
 			step.add(null);
 			step2.add(null);
 		} else if (gameData[0] == 'R') {
-			step.add(new pathFollower(ConstPaths.rightSide_leftPathMid, ConstPaths.rightSide_rightPathMid));
+			step.add(new pathFollower(ConstPaths.rightSide_leftPathMid, ConstPaths.rightSide_rightPathMid,0));
 			step2.add(new UseBelt(3, 1.0));
 			step.add(new UseCarriage(1, false));
 			step2.add(new UseIntake(.5, 3));
