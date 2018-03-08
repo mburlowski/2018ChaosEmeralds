@@ -10,20 +10,21 @@ import objects.Action;
 
 public class arms extends Action {
 	DoubleSolenoid pistonArm, pistonLU, pistonRU;
-	Solenoid pistonLFA, pistonRFA, pistonLUA, pistonRUA;
 	public boolean grab;
 	public boolean release;
 	public TalonSRX intakeLeftArm, intakeRightArm;
 
 	public arms() {
-		pistonArm = new DoubleSolenoid(Const.armLFwd, Const.armLRev);
+		pistonArm = new DoubleSolenoid(Const.armPistonForward, Const.armLRev);
 		intakeLeftArm = new TalonSRX(Const.armLIntake);
+		intakeLeftArm.setInverted(true);
 		intakeRightArm = new TalonSRX(Const.armRIntake);
 	}
 
 	/** Closes arms */
 	public void grab() {
 		pistonArm.set(DoubleSolenoid.Value.kForward);
+		release = false;
 	}
 	/**Closes one side; true=right*/
 	
@@ -31,6 +32,7 @@ public class arms extends Action {
 	/** Opens arms */
 	public void release() {
 		pistonArm.set(DoubleSolenoid.Value.kReverse);
+		release = true;
 	}
 	
 
@@ -110,7 +112,7 @@ public class arms extends Action {
 	
 	/** First is left-forward(0), right-forward(1), left-up(2), right-up(3); second is off(f) or on(t) */
 	
-	public void runPiston(int which, boolean state) {
+	/*public void runPiston(int which, boolean state) {
 		switch (which) {
 		case 0:
 			pistonLFA.set(state);
@@ -125,6 +127,6 @@ public class arms extends Action {
 			pistonRUA.set(state);
 			break;
 	}
-	}
+	}*/
 	
 }

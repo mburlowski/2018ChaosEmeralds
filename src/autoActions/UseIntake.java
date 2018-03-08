@@ -4,10 +4,15 @@ import org.usfirst.frc.team2472.robot.Robot;
 
 import objects.Action;
 
-public class armIntake extends Action {
+public class UseIntake extends Action {
 	double armSpeed;
 	int timeout;
-	public armIntake(double speed,int time) {
+	/**
+	 * Give Speed and time for autonomous
+	 * @param speed
+	 * @param time
+	 */
+	public UseIntake(double speed,int time) {
 		armSpeed=speed;
 		timeout=time;
 	}

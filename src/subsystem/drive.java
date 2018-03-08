@@ -19,11 +19,18 @@ public class drive extends Action {
 
 	public drive() {
 		bL = new TalonSRX(Const.motorBL);
-		fL = new TalonSRX(Const.motorBR);
-		bR = new TalonSRX(Const.motorFL);
+		bR = new TalonSRX(Const.motorBR);
+		fL = new TalonSRX(Const.motorFL);
 		fR = new TalonSRX(Const.motorFR);
 		bR.setInverted(true);
 		fR.setInverted(true);
+		fR.set(ControlMode.Follower,0);
+		bL.set(ControlMode.Follower,0);
+		fR.follow(bR);
+		bL.follow(fL);
+		
+		//bR.setInverted(true);
+		//fR.setInverted(true);
 //		gonnaCrashL = new isGonnaCrashAh(Const.dSensL);
 	//	gonnaCrashR = new isGonnaCrashAh(Const.dSensR);
 		// setInverted is used to enumerate backward motors
@@ -42,20 +49,12 @@ public class drive extends Action {
 
 	/** Moves the robot linearly based on joystick movement */
 	public void tankDrive(Joystick ljoy, Joystick rjoy) {
-		// halves speed if near wall / isGonnaCrash
-		// sets speed to the joystick value input times .5 if near wall, else times 1
-		if (Math.abs(ljoy.getY()) > Const.ledzone) {
-			bL.set(ControlMode.PercentOutput, ljoy.getY() * ((gonnaCrashL.isNearWall()) ? .5 : 1));
-			fL.follow(bL);
-		}
-		if (Math.abs(rjoy.getY()) > Const.redzone) {
-			bR.set(ControlMode.PercentOutput, rjoy.getY() * ((gonnaCrashR.isNearWall()) ? .5 : 1));
-			fR.follow(bR);
-		}
+		fR.set(ControlMode.PercentOutput,ljoy.getRawAxis(1));
+		fL.set(ControlMode.PercentOutput,rjoy.getRawAxis(1));
 	}
 	
 	/** Moves the robot linearly based on joystick movement */
-	public void tankDrive(XboxController x) {
+	/*public void tankDrive(XboxController x) {
 		// halves speed if near wall / isGonnaCrash
 		// sets speed to the joystick value input times .5 if near wall, else times 1
 		if (Math.abs(x.getY(Hand.kLeft)) > Const.ledzone) {
@@ -66,7 +65,7 @@ public class drive extends Action {
 			bR.set(ControlMode.PercentOutput, x.getY(Hand.kRight) * ((gonnaCrashR.isNearWall()) ? .5 : 1));
 			fR.follow(bR);
 		}
-	}
+	}*/
 	public void XBoxDrive(XboxController xbox,double baseSpeed){
 
 		/* This is a control scheme inspired by rocket league.
@@ -83,46 +82,25 @@ public class drive extends Action {
 
 		 */
 
-		if(xbox.getRawButton(2)){
-
-			if(xbox.getRawAxis(0)<0) {
-
-				rightSide= -xbox.getRawAxis(0);
-
-				leftSide=-rightSide;
-
-			}
-
-			if(xbox.getRawAxis(0)>0) {
-
-				leftSide= xbox.getRawAxis(0);
-
-				rightSide=-rightSide;
-
-			}
-
-		} else {
-
-			baseSpeed= -xbox.getRawAxis(2)+xbox.getRawAxis(3);
-
-			if(xbox.getRawAxis(0)<0) {
-
-				leftSide=baseSpeed*(1+xbox.getRawAxis(0));
-
-				rightSide=baseSpeed;
-
-			}
-
-			if(xbox.getRawAxis(0)>0) {
-
-				rightSide=baseSpeed*(1-xbox.getRawAxis(0));
-
-				leftSide=baseSpeed;
-
-			}
-
-		}
-
+	if(xbox.getRawAxis(0)>=0) 
+	{
+	rightSide=(xbox.getRawAxis(3)-xbox.getRawAxis(2))*(1-xbox.getRawAxis(0));
+	leftSide=xbox.getRawAxis(3)-xbox.getRawAxis(2);
+	}if(xbox.getRawAxis(0)<0) 
+	{
+		rightSide=xbox.getRawAxis(3)-xbox.getRawAxis(2);
+		leftSide=((xbox.getRawAxis(3)-xbox.getRawAxis(2))*(1+xbox.getRawAxis(0)));
+	}if(xbox.getRawAxis(0)>0&&xbox.getRawButton(2)) 
+	{
+		rightSide=-leftSide;
+	}
+	if(xbox.getRawAxis(0)<0&&xbox.getRawButton(2)) 
+	{
+		leftSide=-rightSide;
+		
+	}
+	leftSide=leftSide*baseSpeed;
+	rightSide=rightSide*baseSpeed;
 		turn(leftSide,rightSide);
 
 		//combines the ax'es of the triggers
@@ -151,18 +129,19 @@ public class drive extends Action {
 	public void setAllMotors(double spped) {
 
 		bL.set(ControlMode.PercentOutput, spped);
-		fL.set(ControlMode.PercentOutput, spped);
+		//fL.set(ControlMode.PercentOutput, spped);
 		bR.set(ControlMode.PercentOutput, spped);
-		fR.set(ControlMode.PercentOutput, spped);
+	//	fR.set(ControlMode.PercentOutput, spped);
 	}
 
 	/** Runs both sides of the drivetrain at desired power individually */
 	public void turn(double speedL, double speedR) {
 
-		bL.set(ControlMode.PercentOutput, speedL);
+		//bL.set(ControlMode.PercentOutput, speedL);
 		fL.set(ControlMode.PercentOutput, speedL);
-		bR.set(ControlMode.PercentOutput, speedR);
-		fR.set(ControlMode.PercentOutput, speedR);	}
+		bR.set(ControlMode.PercentOutput,speedR);
+		//fR.set(ControlMode.PercentOutput, speedR);
+		}
 
 	/**
 	 * Causes the robot to spin by running both sides of the drive train in
@@ -193,12 +172,16 @@ public class drive extends Action {
 
 	/** Runs back left motor at full power */
 	public void runBL(double spped) {
-		bL.set(ControlMode.PercentOutput, spped);
+		fL.set(ControlMode.PercentOutput, spped);
 	}
 	public void speed(double left, double right) 
 	{
-		fL.set(ControlMode.Velocity,left);
-		fR.set(ControlMode.Velocity,right);
+		bR.set(ControlMode.Velocity,left);
+		fL.set(ControlMode.Velocity,right);
 		
+	}
+	public void slaveTest (double speed) {
+		fL.set(ControlMode.PercentOutput, speed);
+		bR.set(ControlMode.PercentOutput, speed);
 	}
 }

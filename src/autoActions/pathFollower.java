@@ -9,10 +9,10 @@ public class pathFollower extends Action {
 	int length;
 	double step;
 	double math=1024/15.7;
-	public pathFollower(double[] leftSide,double[] rightSide,int totalLength) {
+	public pathFollower(double[] leftSide,double[] rightSide) {
 		left=leftSide;
 		right=rightSide;
-		length=totalLength;
+		length=left.length-1;
 		
 	}
 	public void startAction() {
@@ -29,7 +29,5 @@ public class pathFollower extends Action {
 	public void endAction() {
 		
 	}
-	public boolean isFinished() {
-		return true;
-	}
+	
 }

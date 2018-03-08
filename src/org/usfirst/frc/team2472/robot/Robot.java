@@ -11,15 +11,17 @@ import java.util.ArrayList;
 
 import com.kauailabs.nav6.frc.IMUAdvanced;
 
-import autoActions.armIntake;
-import autoActions.doNothing;
-import autoActions.extendCarriage;
-import autoActions.lift;
+import autoActions.UseIntake;
+import autoActions.UseBelt;
+import autoActions.UseCarriage;
 import autoActions.pathFollower;
+import autoActions.simpleForward;
 import constants.Const;
 import constants.ConstPaths;
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -45,36 +47,43 @@ import subsystem.drive;
  * project.
  */
 public class Robot extends IterativeRobot {
-	int armPos=0;
-	int liftPos=0;
-	int carriagePos=0;
-//	UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture();
+	long time;
+	int mode;
+	long cTime, aTime, pTime;
+	int armPos = 0;
+	int currentAction;
+	int liftPos = 0;
+	int carriagePos = 0;
+
 	boolean switchClose;
-	Compressor compress=new Compressor(0);
-	//public static AnalogInput distSense = new AnalogInput(Const.dSense);
-	//public static NetworkTableEntry entry;
-	Joystick xbox =new Joystick(Const.xboxManipulator);
+	Compressor compress = new Compressor(0);
+	int AutoSpeedL=200;
+	int AutoSpeedR=200;
+	// public static AnalogInput distSense = new AnalogInput(Const.dSense);
+	// public static NetworkTableEntry entry;
+	Joystick L = new Joystick(4);
+	boolean lastChange = false;
+	Joystick R = new Joystick(5);
+	Joystick xbox = new Joystick(Const.xboxManipulator);
 	public static drive d = new drive();
-	char fieldSide='q';
+	char fieldSide = 'q';
 	public static arms a = new arms();
-	public static carriage c =new carriage();
-	public static PistonLift Piston=new PistonLift();
-	public static BeltLift Belt=new BeltLift();
-	public static climber climb=new climber();
-	
+	public static carriage c = new carriage();
+	public static PistonLift Piston = new PistonLift();
+	public static BeltLift Belt = new BeltLift();
+	public static climber climb = new climber();
 
 	Joystick joyL = new Joystick(Const.jstickL);
 	Joystick joyR = new Joystick(Const.jstickR);
 	XboxController xboxDrive = new XboxController(Const.xbox);
 	Joystick box = new Joystick(Const.box);
 
-	IMUAdvanced imu = new IMUAdvanced(Const.imuPort);
+	// IMUAdvanced imu = new IMUAdvanced(Const.imuPort);
 
 	ArrayList<Action> step = new ArrayList<Action>();
 	ArrayList<Action> step2 = new ArrayList<Action>();
-	int nAction = 0;
-	
-	//NetworkTableInstance offSeasonNetworkTable;
+
+	// NetworkTableInstance offSeasonNetworkTable;
 	String gameDataInit;
 	char[] gameData;
 	boolean[] automode; // left = false, right = true
@@ -87,16 +96,21 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-//		cam0.setFPS(20);
-//		cam0.setResolution(640, 480);
+		UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture();
+		cam0.setFPS(60);
+		cam0.setResolution(160, 120);
+		cam0.setWhiteBalanceAuto();
+		cam0.setExposureAuto();
+
 		compress.setClosedLoopControl(true);
-		imu.zeroYaw();
+		// imu.zeroYaw();
 		// smartdashboard shtuff
-	//	SmartDashboard.putNumber("A. Number", .1);
-		
-		//offSeasonNetworkTable = NetworkTableInstance.create();
-		//offSeasonNetworkTable.startClient("10.0.100.5");
-	//	gameDataInit = offSeasonNetworkTable.getTable("OffseasonFMSInfo").getEntry("GameData").getString("defaultValue");
+		// SmartDashboard.putNumber("A. Number", .1);
+
+		// offSeasonNetworkTable = NetworkTableInstance.create();
+		// offSeasonNetworkTable.startClient("10.0.100.5");
+		// gameDataInit =
+		// offSeasonNetworkTable.getTable("OffseasonFMSInfo").getEntry("GameData").getString("defaultValue");
 	}
 
 	/**
@@ -113,49 +127,130 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		
-		if(box.getRawButton(8))fieldSide='L';
-		if(box.getRawButton(7))fieldSide='M';
-		if(box.getRawButton(6))fieldSide='R';
-		
-		while(gameData.length==0){
 		gameData = DriverStation.getInstance().getGameSpecificMessage().toCharArray();
+		time = System.currentTimeMillis();
+		if (box.getRawButton(5))
+			fieldSide = 'L';
+		if (box.getRawButton(6))
+			fieldSide = 'M';
+		if (box.getRawButton(7))
+			fieldSide = 'R';
+		switchClose = (fieldSide == gameData[0]);
+		int mode = 0;
+/*
+		if (box.getRawButton(1)) {
+			fieldSide = 'S';
 		}
-		switchClose=(fieldSide==gameData[0]);
-		switch(fieldSide) {
-			case('L'):
-				if(switchClose) {
-					hitSwitch();
-				}else{
-					hitSwitchLong();
-				}
-				break;
-			case('M'):
-				// TODO write code for middle to switch
-				step.add(new lift(3));
-				step2.add(new extendCarriage(1));
-				step.add(new armIntake(.5,3));
-				step.add(new Action());
-				step.add(null);
-				step2.add(null);
-				break;
-			case('R'):
-				if(switchClose) {
-					hitSwitch();
-				}else{
-					hitSwitchLong();
-				}
-				break;
-			
-		} 
+		System.out.println("Got String: " + gameData[0]);
+		if (fieldSide == 'M') {
+			// TODO write code for middle to switcho
+			midSwitch();
+		} else {
+			if (switchClose) {
+				System.out.println("Close switch left");
+				hitSwitch();
+			} else if (fieldSide != 'M' && !switchClose) {
+				System.out.println("Close switch left");
+				hitSwitchLong();
+			}
+
+		}
+
+		if (fieldSide == 'q') {
+
+			step.add(null);
+			step2.add(null);
+		}
+		if (fieldSide == 'S') {
+			step.add(new simpleForward(6, 100));
+			step2.add(new Action());
+			step.add(new simpleForward(6, -100));
+			step2.add(new Action());
+			step.add(null);
+			step2.add(null);
+		}
+		System.out.println(step.size() + "    Q    " + step.size());
+		if (step.size() > 0) {
+			currentAction = 0;
+
+			step.get(currentAction).startAction();
+			step2.get(currentAction).startAction();
+		}
+*/
+		// My Stuff
+		// System.out.println("Creating action array");
+		// step.add(new Action());
+		// step2.add(new Action());
+		// step.add(null);
+		// step2.add(null);
+		// System.out.println("Done");
 	}
-	
 
 	/**
 	 * This function is called periodically during autonomous.
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		/*
+		System.out.println(currentAction);
+		if (step.size() > 0 && step.get(currentAction) != null) {
+
+			if (!step.get(currentAction).isFinished()) {
+
+				step.get(currentAction).periodic();
+
+			}
+
+			if (!step2.get(currentAction).isFinished()) {
+
+				step2.get(currentAction).periodic();
+
+			}
+
+			if (step.get(currentAction).isFinished() && step2.get(currentAction).isFinished()) {
+
+				currentAction++;
+
+				if (step.get(currentAction) != null) {
+
+					step.get(currentAction).startAction();
+
+					step2.get(currentAction).startAction();
+
+				}
+
+			}
+
+		}*/
+		/*
+		 * if(box.getRawButton(5)) { switch(mode) { case 0:
+		 * if(time+3570>System.currentTimeMillis()) {d.speed(200, 200); }else
+		 * {d.speed(0, 0);mode = 1;}
+		 * 
+		 * case 1: time = System.currentTimeMillis(); break; }
+		 * 
+		 * }else {
+		 * 
+		 * }
+		 */
+		
+		 // AUTONYMOUS THAT IS CONFIRMED TO WORK 
+		
+
+		 if(time+3570>System.currentTimeMillis())
+		  {d.speed(AutoSpeedL, AutoSpeedR); }else {d.speed(0, 0);}
+		  
+		  if(time+3570<System.currentTimeMillis()&&time+3570+3000>System.
+		  currentTimeMillis()&&switchClose) { Belt.lift(-1.0);
+		  }if(time+3570+3000<System.currentTimeMillis()&&switchClose) { Belt.lift(0.0);
+		  a.takeIn(-.5); }
+		 
+	}
+
+	public void teleopInit() {
+		aTime = System.currentTimeMillis();
+		// cTime = System.currentTimeMillis();
+		pTime = System.currentTimeMillis();
 
 	}
 
@@ -164,22 +259,84 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		//d.XBoxDrive(xboxDrive, 1.0);
-		a.takeIn(xbox.getRawAxis(2)-xbox.getRawAxis(3));
-		
-		if(Piston.lifted&&xbox.getRawButton(Const.buttonA))liftPos=1;
-		if(!Piston.lifted&&xbox.getRawButton(Const.buttonA))liftPos=2;
-		if(liftPos==1)Piston.liftDown();
-		if(liftPos==2)Piston.liftUp();
-		if(c.in&&xbox.getRawButton(Const.buttonB))carriagePos=1;
-		if(!c.in&&xbox.getRawButton(Const.buttonB))carriagePos=2;
-		if(carriagePos==1)c.Out();
-		if(carriagePos==2)c.In();
-		if(a.grab&&xbox.getRawButton(Const.buttonX))armPos=1;
-		if(!a.grab&&xbox.getRawButton(Const.buttonX))armPos=2;
-		if(armPos==1)a.release();
-		if(armPos==2)a.grab();
-		Belt.lift(xbox.getRawAxis(1));
+		if (xbox.getRawButton(5)) {
+			c.Out();
+			cTime = System.currentTimeMillis();
+		System.out.print(carriagePos);
+		}
+		if (xbox.getRawButton(6)) {
+			c.In();
+			cTime = System.currentTimeMillis();
+			System.out.print(carriagePos);
+		}
+		/*
+		 * Button mapings
+		 * 
+		 * left stick is belt lift
+		 * 
+		 * Y is toggle to send out carrage B is lower piston lift A is raise piston lift
+		 * X is toggle for arm to close/open
+		 * 
+		 * Arm intake is left trigger - right trigger
+		 * 
+		 * 
+		 */
+		// d.tankDrive(L,R);
+		d.XBoxDrive(xboxDrive, .7);
+
+		// Arm intake
+		a.takeIn(xbox.getRawAxis(1));
+
+		// Piston Toggle on A
+		// if(Piston.lifted&&xbox.getRawButton(Const.buttonA))liftPos=1;
+		// if(!Piston.lifted&&xbox.getRawButton(Const.buttonA))liftPos=2;
+		// if(liftPos==1)Piston.liftDown();
+
+		// if(liftPos==2)Piston.liftUp();
+
+		if (xbox.getRawButton(Const.buttonA))
+			Piston.liftUp();
+		if (xbox.getRawButton(Const.buttonB))
+			Piston.liftDown();
+
+		// &&cTime+20<System.currentTimeMillis()
+		// Carriaige toggle on Y
+		if (carriagePos == 2 && xbox.getRawButton(Const.buttonY)) {
+			carriagePos = 1;
+		}
+		if (carriagePos == 1 && xbox.getRawButton(Const.buttonY)) {
+			carriagePos = 2;
+		}
+
+		// Arm in unless it is held
+
+		if (xbox.getRawButton(Const.buttonX)) {
+
+			armPos = 1;
+			System.out.println("arms");
+			a.takeIn(.4);
+
+		}
+
+		else {
+			armPos = 2;
+		}
+
+		if (armPos == 1) {
+			a.release();
+			if (!lastChange)
+				aTime = System.currentTimeMillis();
+			else {
+				lastChange = true;
+			}
+		}
+		if (armPos == 2) {
+			a.grab();
+			aTime = System.currentTimeMillis();
+		}
+
+		// Belt lift toggle on left stick
+		Belt.lift(xbox.getRawAxis(3) - xbox.getRawAxis(2));
 	}
 
 	@Override
@@ -190,215 +347,194 @@ public class Robot extends IterativeRobot {
 	}
 
 	@Override
-	
+
 	public void testPeriodic() {
 		// DPad left and right switch test modes
-		SmartDashboard.putNumber("BL Motor", d.bL.getMotorOutputPercent());
-		SmartDashboard.putNumber("BR Motor", d.bR.getMotorOutputPercent());
-		SmartDashboard.putNumber("FL Motor", d.fL.getMotorOutputPercent());
-		SmartDashboard.putNumber("FR Motor", d.fR.getMotorOutputPercent());
-		SmartDashboard.putNumber("IL Motor", a.intakeLeftArm.getMotorOutputPercent());
-		SmartDashboard.putNumber("IR Motor", a.intakeRightArm.getMotorOutputPercent());
-		switch (testmode) {
+		d.slaveTest(.25);
+		/*
+		 * if(xbox.getRawButton(Const.buttonA))d.runBL(.25); else d.runBL(0);
+		 * if(xbox.getRawButton(Const.buttonB))d.runFL(.25); else d.runFL(0);
+		 * if(xbox.getRawButton(Const.buttonX))d.runBR(.25); else d.runBR(0);
+		 * if(xbox.getRawButton(Const.buttonY))d.runFR(.25); else d.runFR(0);
+		 */
 
-		case 0:
-			// talon speeds are set by the analog triggers (LT/RT)
-			// RT should move forward, LT should move backward.
-			// A button should run BackLeft motor
-			// B button should run BackRight motor
-			// X button should run FrontLeft motor
-			// Y button should run FrontRight motor
-			// Left Bumper should run Left arm intake
-			// Right Bumper should run Right arm intake
-			if (xboxDrive.getAButtonPressed()) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					d.runBL(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					d.runBL(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getAButtonReleased()) {
-				d.runBL(0);
-			}
-			if (xboxDrive.getBButtonPressed()) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					d.runBR(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					d.runBR(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getBButtonReleased()) {
-				d.runBR(0);
-			}
-			if (xboxDrive.getXButtonPressed()) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					d.runFL(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					d.runBL(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getXButtonReleased()) {
-				d.runFL(0);
-			}
-			if (xboxDrive.getYButtonPressed()) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					d.runFR(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					d.runFR(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getYButtonReleased()) {
-				d.runFR(0);
-			}
-			if (xboxDrive.getBumperPressed(Hand.kLeft)) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					a.runL(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					a.runL(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getBumperReleased(Hand.kLeft)) {
-				a.runL(0);
-			}
-			if (xboxDrive.getBumperPressed(Hand.kRight)) {
-				if (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
-					a.runR(xboxDrive.getTriggerAxis(Hand.kLeft));
-				if (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 && xboxDrive.getTriggerAxis(Hand.kRight) < 60)
-					a.runR(-xboxDrive.getTriggerAxis(Hand.kLeft));
-			} else if (xboxDrive.getBumperReleased(Hand.kRight)) {
-				a.runR(0);
-			}
-			break;
-		case 1:
-			// Hold LB, RB, LT, or RT to choose piston (bumpers forward, triggers up)
-			// press Y to set piston "forward"
-			// press B to set piston "reverse"
-			// press X to set piston "off"
-			/*
-			if (xboxDrive.getYButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
-					a.runPiston(0, 2);
-				else if (xboxDrive.getBumper(Hand.kRight))
-					a.runPiston(1, 2);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5)
-					a.runPiston(2, 2);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5)
-					a.runPiston(3, 2);
-			}
-			if (xboxDrive.getBButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
-					a.runPiston(0, 1);
-				else if (xboxDrive.getBumper(Hand.kRight))
-					a.runPiston(1, 1);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5)
-					a.runPiston(2, 1);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5)
-					a.runPiston(3, 1);
-			}
-			if (xboxDrive.getAButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
-					a.runPiston(0, 0);
-				else if (xboxDrive.getBumper(Hand.kRight))
-					a.runPiston(1, 0);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5)
-					a.runPiston(2, 0);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5)
-					a.runPiston(3, 0);
-			}
-			break;
-		case 2:
-			// Hold LB, RB, LT, or RT to choose piston (bumpers forward, triggers up)
-			// press Y to set piston "on"
-			// press X to set piston "off"
-			if (xboxDrive.getYButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
-					a.runPiston(0, true);
-				else if (xboxDrive.getBumperPressed(Hand.kRight))
-					a.runPiston(1, true);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5) 
-					a.runPiston(2, true);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5) 
-					a.runPiston(3, true);
-			}
-			if (xboxDrive.getAButtonPressed()) {
-				if (xboxDrive.getBumperPressed(Hand.kLeft))
-					a.runPiston(0, false);
-				else if (xboxDrive.getBumperPressed(Hand.kRight))
-					a.runPiston(1, false);
-				else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5) 
-					a.runPiston(2, false);
-				else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5) 
-					a.runPiston(3, false);
-			}
-
-			break;
-		}
-		if (xboxDrive.getPOV() == Const.povRight && testmode < 2) {
-			testmode++;
-			testInit();
-		}
-		if (xboxDrive.getPOV() == Const.povLeft && testmode > 0) {
-			testmode--;
-			testInit();*/
-		}
+		/*
+		 * SmartDashboard.putNumber("BL Motor", d.bL.getMotorOutputPercent());
+		 * SmartDashboard.putNumber("BR Motor", d.bR.getMotorOutputPercent());
+		 * SmartDashboard.putNumber("FL Motor", d.fL.getMotorOutputPercent());
+		 * SmartDashboard.putNumber("FR Motor", d.fR.getMotorOutputPercent());
+		 * SmartDashboard.putNumber("IL Motor",
+		 * a.intakeLeftArm.getMotorOutputPercent());
+		 * SmartDashboard.putNumber("IR Motor",
+		 * a.intakeRightArm.getMotorOutputPercent()); switch (testmode) {
+		 * 
+		 * case 0: // talon speeds are set by the analog triggers (LT/RT) // RT should
+		 * move forward, LT should move backward. // A button should run BackLeft motor
+		 * // B button should run BackRight motor // X button should run FrontLeft motor
+		 * // Y button should run FrontRight motor // Left Bumper should run Left arm
+		 * intake // Right Bumper should run Right arm intake if
+		 * (xboxDrive.getAButtonPressed()) { if (xboxDrive.getTriggerAxis(Hand.kRight)
+		 * >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
+		 * d.runBL(xboxDrive.getTriggerAxis(Hand.kLeft)); if
+		 * (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 &&
+		 * xboxDrive.getTriggerAxis(Hand.kRight) < 60)
+		 * d.runBL(-xboxDrive.getTriggerAxis(Hand.kLeft)); } else if
+		 * (xboxDrive.getAButtonReleased()) { d.runBL(0); } if
+		 * (xboxDrive.getBButtonPressed()) { if (xboxDrive.getTriggerAxis(Hand.kRight)
+		 * >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
+		 * d.runBR(xboxDrive.getTriggerAxis(Hand.kLeft)); if
+		 * (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 &&
+		 * xboxDrive.getTriggerAxis(Hand.kRight) < 60)
+		 * d.runBR(-xboxDrive.getTriggerAxis(Hand.kLeft)); } else if
+		 * (xboxDrive.getBButtonReleased()) { d.runBR(0); } if
+		 * (xboxDrive.getXButtonPressed()) { if (xboxDrive.getTriggerAxis(Hand.kRight)
+		 * >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
+		 * d.runFL(xboxDrive.getTriggerAxis(Hand.kLeft)); if
+		 * (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 &&
+		 * xboxDrive.getTriggerAxis(Hand.kRight) < 60)
+		 * d.runBL(-xboxDrive.getTriggerAxis(Hand.kLeft)); } else if
+		 * (xboxDrive.getXButtonReleased()) { d.runFL(0); } if
+		 * (xboxDrive.getYButtonPressed()) { if (xboxDrive.getTriggerAxis(Hand.kRight)
+		 * >= 60 && xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
+		 * d.runFR(xboxDrive.getTriggerAxis(Hand.kLeft)); if
+		 * (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 &&
+		 * xboxDrive.getTriggerAxis(Hand.kRight) < 60)
+		 * d.runFR(-xboxDrive.getTriggerAxis(Hand.kLeft)); } else if
+		 * (xboxDrive.getYButtonReleased()) { d.runFR(0); } if
+		 * (xboxDrive.getBumperPressed(Hand.kLeft)) { if
+		 * (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 &&
+		 * xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
+		 * a.runL(xboxDrive.getTriggerAxis(Hand.kLeft)); if
+		 * (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 &&
+		 * xboxDrive.getTriggerAxis(Hand.kRight) < 60)
+		 * a.runL(-xboxDrive.getTriggerAxis(Hand.kLeft)); } else if
+		 * (xboxDrive.getBumperReleased(Hand.kLeft)) { a.runL(0); } if
+		 * (xboxDrive.getBumperPressed(Hand.kRight)) { if
+		 * (xboxDrive.getTriggerAxis(Hand.kRight) >= 60 &&
+		 * xboxDrive.getTriggerAxis(Hand.kLeft) < 60)
+		 * a.runR(xboxDrive.getTriggerAxis(Hand.kLeft)); if
+		 * (xboxDrive.getTriggerAxis(Hand.kLeft) >= 60 &&
+		 * xboxDrive.getTriggerAxis(Hand.kRight) < 60)
+		 * a.runR(-xboxDrive.getTriggerAxis(Hand.kLeft)); } else if
+		 * (xboxDrive.getBumperReleased(Hand.kRight)) { a.runR(0); } break; case 1:
+		 */
+		// Hold LB, RB, LT, or RT to choose piston (bumpers forward, triggers up)
+		// press Y to set piston "forward"
+		// press B to set piston "reverse"
+		// press X to set piston "off"
+		/*
+		 * if (xboxDrive.getYButtonPressed()) { if
+		 * (xboxDrive.getBumperPressed(Hand.kLeft)) a.runPiston(0, 2); else if
+		 * (xboxDrive.getBumper(Hand.kRight)) a.runPiston(1, 2); else if
+		 * (xboxDrive.getTriggerAxis(Hand.kLeft)>.5) a.runPiston(2, 2); else if
+		 * (xboxDrive.getTriggerAxis(Hand.kRight)>.5) a.runPiston(3, 2); } if
+		 * (xboxDrive.getBButtonPressed()) { if (xboxDrive.getBumperPressed(Hand.kLeft))
+		 * a.runPiston(0, 1); else if (xboxDrive.getBumper(Hand.kRight)) a.runPiston(1,
+		 * 1); else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5) a.runPiston(2, 1); else
+		 * if (xboxDrive.getTriggerAxis(Hand.kRight)>.5) a.runPiston(3, 1); } if
+		 * (xboxDrive.getAButtonPressed()) { if (xboxDrive.getBumperPressed(Hand.kLeft))
+		 * a.runPiston(0, 0); else if (xboxDrive.getBumper(Hand.kRight)) a.runPiston(1,
+		 * 0); else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5) a.runPiston(2, 0); else
+		 * if (xboxDrive.getTriggerAxis(Hand.kRight)>.5) a.runPiston(3, 0); } break;
+		 * case 2: // Hold LB, RB, LT, or RT to choose piston (bumpers forward, triggers
+		 * up) // press Y to set piston "on" // press X to set piston "off" if
+		 * (xboxDrive.getYButtonPressed()) { if (xboxDrive.getBumperPressed(Hand.kLeft))
+		 * a.runPiston(0, true); else if (xboxDrive.getBumperPressed(Hand.kRight))
+		 * a.runPiston(1, true); else if (xboxDrive.getTriggerAxis(Hand.kLeft)>.5)
+		 * a.runPiston(2, true); else if (xboxDrive.getTriggerAxis(Hand.kRight)>.5)
+		 * a.runPiston(3, true); } if (xboxDrive.getAButtonPressed()) { if
+		 * (xboxDrive.getBumperPressed(Hand.kLeft)) a.runPiston(0, false); else if
+		 * (xboxDrive.getBumperPressed(Hand.kRight)) a.runPiston(1, false); else if
+		 * (xboxDrive.getTriggerAxis(Hand.kLeft)>.5) a.runPiston(2, false); else if
+		 * (xboxDrive.getTriggerAxis(Hand.kRight)>.5) a.runPiston(3, false); }
+		 * 
+		 * break; } if (xboxDrive.getPOV() == Const.povRight && testmode < 2) {
+		 * testmode++; testInit(); } if (xboxDrive.getPOV() == Const.povLeft && testmode
+		 * > 0) { testmode--; testInit();
+		 */
 
 	}
+
 	public void hitScale() {
-		if(gameData[1]=='L') {
-			step.add(new pathFollower(ConstPaths.longScale, ConstPaths.shortScale, ConstPaths.longScale.length-1));
-			step2.add(new lift(3));
-			step.add(new extendCarriage(1));
-			step2.add(new armIntake(.5,3));
+		System.out.println("scale");
+		if (gameData[1] == 'L') {
+			step.add(new pathFollower(ConstPaths.longScale, ConstPaths.shortScale));
+			step2.add(new UseBelt(3, 1.0));
+			step.add(new UseCarriage(3, false));
+			step2.add(new UseIntake(.5, 3));
 			step.add(null);
 			step2.add(null);
-		}else {
-			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale, ConstPaths.longScale.length-1));
-			step2.add(new lift(3));
-			step.add(new extendCarriage(1));
-			step2.add(new armIntake(.5,3));
+		} else {
+			step.add(new pathFollower(ConstPaths.shortScale, ConstPaths.longScale));
+			step2.add(new UseBelt(3, 1.0));
+			step.add(new UseCarriage(3, false));
+			step2.add(new UseIntake(.5, 3));
 			step.add(null);
 			step2.add(null);
 		}
 	}
-	public void hitSwitch() {
-		if(gameData[1]=='L') {
-			step.add(new pathFollower(ConstPaths.Outside_Short_Switch, ConstPaths.Inside_Short_Switch, ConstPaths.Inside_Short_Switch.length-1));
-			step2.add(new lift(3));
-			step.add(new extendCarriage(1));
-			step2.add(new armIntake(.5,3));
-			step.add(null);
-			step2.add(null);
-			
-		}else if(gameData[0]=='R') {
-			step.add(new pathFollower(ConstPaths.Inside_Short_Switch, ConstPaths.Outside_Short_Switch, ConstPaths.Inside_Short_Switch.length-1));
-			step2.add(new lift(3));
-			step.add(new extendCarriage(1));
-			step2.add(new armIntake(.5,3));
-			step.add(null);
-			step2.add(null);
-			
-			
-		}
-	}
-		public void hitSwitchLong() {
-			if(gameData[1]=='L') {
-				step.add(new pathFollower(ConstPaths.Outside_long_Switch, ConstPaths.Inside_Long_Switch, ConstPaths.Inside_Long_Switch.length-1));
-				step2.add(new lift(3));
-				step.add(new extendCarriage(1));
-				step2.add(new armIntake(.5,3));
-				step.add(null);
-				step2.add(null);
-				
-			}else if(gameData[0]=='R') {
-				step.add(new pathFollower(ConstPaths.Inside_Long_Switch, ConstPaths.Outside_long_Switch, ConstPaths.Inside_Long_Switch.length-1));
-				step2.add(new lift(3));
-				step.add(new extendCarriage(1));
-				step2.add(new armIntake(.5,3));
-				step.add(null);
-				step2.add(null);
-				
-				
-			}
-		
-		
-		
-		
-	}
-	private void hitSwitchClose() {
-		// TODO Auto-generated method stub
-		
-	}
-		
-	}
-	
 
+	public void hitSwitch() {
+		System.out.println("switch");
+		if (gameData[1] == 'L') {
+			step.add(new pathFollower(ConstPaths.Outside_Short_Switch, ConstPaths.Inside_Short_Switch));
+			step2.add(new UseBelt(3, 1.0));
+			step.add(new UseCarriage(1, false));
+			step2.add(new UseIntake(.5, 3));
+			step.add(null);
+			step2.add(null);
+
+		} else if (gameData[0] == 'R') {
+			step.add(new pathFollower(ConstPaths.Inside_Short_Switch, ConstPaths.Outside_Short_Switch));
+			step2.add(new UseBelt(3, 1.0));
+			step.add(new UseCarriage(1, false));
+			step2.add(new UseIntake(.5, 3));
+			step.add(null);
+			step2.add(null);
+
+		}
+	}
+
+	public void hitSwitchLong() {
+		System.out.println("switchLong");
+		if (gameData[1] == 'L') {
+			step.add(new pathFollower(ConstPaths.Outside_long_Switch, ConstPaths.Inside_Long_Switch));
+			step2.add(new UseBelt(3, 1.0));
+			step.add(new UseCarriage(1, false));
+			step2.add(new UseIntake(.5, 3));
+			step.add(null);
+			step2.add(null);
+
+		} else if (gameData[0] == 'R') {
+
+			step.add(new pathFollower(ConstPaths.Inside_Long_Switch, ConstPaths.Outside_long_Switch));
+			step2.add(new UseBelt(3, 1.0));
+			step.add(new UseCarriage(1, false));
+			step2.add(new UseIntake(.5, 3));
+			step.add(null);
+			step2.add(null);
+
+		}
+
+	}
+
+	public void midSwitch() {
+		System.out.println("midSwitch");
+		if (gameData[0] == 'L') {
+			step.add(new pathFollower(ConstPaths.leftSide_leftPathMid, ConstPaths.leftSide_rightPathMid));
+			step2.add(new UseBelt(3, 1.0));
+			step.add(new UseCarriage(1, false));
+			step2.add(new UseIntake(.5, 3));
+			step.add(null);
+			step2.add(null);
+		} else if (gameData[0] == 'R') {
+			step.add(new pathFollower(ConstPaths.rightSide_leftPathMid, ConstPaths.rightSide_rightPathMid));
+			step2.add(new UseBelt(3, 1.0));
+			step.add(new UseCarriage(1, false));
+			step2.add(new UseIntake(.5, 3));
+			step.add(null);
+			step2.add(null);
+		}
+	}
+
+}

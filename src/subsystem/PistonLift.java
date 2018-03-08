@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class PistonLift {
 	public boolean lifted=false;
-	DoubleSolenoid lift=new DoubleSolenoid(Const.firstLiftdown,Const.firstLiftUP);
+	DoubleSolenoid lift=new DoubleSolenoid(Const.firstLiftUP,Const.firstLiftdown);
 	
 	public void liftUp() {
 		lift.set(DoubleSolenoid.Value.kForward);
